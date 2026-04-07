@@ -1,0 +1,3148 @@
+---
+title: "Epiparam 2.0"
+output:
+  flexdashboard::flex_dashboard:
+    orientation: rows
+    navbar:
+    - icon: "fa fa-rss"
+      href: http://onehealth.or.kr/
+      align: right
+    vertical_layout: fill
+    theme:
+      version: 4
+      fg: '#030303'
+      bg: '#FBFBFB'
+      navbar-bg: '#8B5A00'
+      sidebar-bg: '#8B5A00'
+      smart: no
+runtime: shiny
+resource_files:
+- gamma_model.rds
+- lognormal_model.rds
+- normal_model.rds
+- weibull_model.rds
+---
+
+```{=html}
+<style type="text/css">
+
+.vis-network .vis-export {
+position: absolute !important;
+top: 10px !important;
+right: 10px !important;
+z-index: 1000 !important;
+background-color: #4169E1 !important;
+color: white !important;
+border: none !important;
+border-radius: 4px !important;
+padding: 6px 12px !important;
+font-weight: bold !important;
+margin-right: 0 !important;
+}
+
+.vis-network .vis-export:hover {
+background-color: #3151A3 !important;
+}
+
+.irs--shiny .irs-min, .irs--shiny .irs-max {
+top: 0;
+padding: 1px 3px;
+text-shadow: none;
+background-color: rgba(25, 25, 26, 0.1);
+border-radius: 3px;
+font-size: 14px;
+line-height: 1.333;
+}
+
+.irs--shiny .irs-from, .irs--shiny .irs-to, .irs--shiny .irs-single {
+color: #FBFBFB;
+text-shadow: none;
+padding: 1px 3px;
+background-color: #000000;
+border-radius: 3px;
+font-size: 14px;
+line-height: 1.333;
+}
+
+.irs--shiny .irs-bar {
+top: 25px;
+height: 8px;
+border-top: 1px solid #70b2e0;
+border-bottom: 1px solid #70b2e0;
+background: #70b2e0;
+cursor: s-resize;
+z-index: 2;
+}
+
+.error-highlight {
+border: 2px solid #ff0000 !important;
+background-color: #ffeeee !important;
+}
+
+body hr {
+border-color: #ffffff;
+margin: 10px 0;
+border: 2px solid #ffffff !important;
+}
+
+.rt-bordered .rt-table, .rt-outlined .rt-table {
+border-style: solid;
+border-top-left-radius: 1.25rem;
+}
+
+h4, .h4 {
+font-size: 10px;
+}
+
+.chart-wrapper .chart-stage {
+color: #000000;
+padding: 0px;
+}
+
+.navbar.navbar-inverse {
+background-color: #8B5A00 !important;
+border-bottom-right-radius: 5.25rem;
+}
+
+.navbar-brand, .navbar.navbar-inverse .navbar-brand {
+color: white !important;
+}
+
+.navbar-brand:hover, .navbar.navbar-inverse .navbar-brand:hover {
+color: white !important;
+}
+
+.nav-tabs-custom > .nav-tabs > li.active {
+border-top-color: #8B5A00;
+}
+
+.navbar.navbar-inverse ul.nav.navbar-nav>li {
+color: #fff;
+font-size: 16px;
+font-family: "TT Norms Pro";
+}
+
+.nav-tabs-custom > .nav-tabs {
+margin: 0;
+border-bottom: 1px solid #8B5A00;
+color: white;
+border-top-right-radius: 10px;
+border-top-left-radius: 3px;
+font-family: "Tw Cen MT";
+}
+
+.nav-tabs-custom > .nav-tabs > li > a, .nav-tabs-custom > .nav-tabs > li > a:active {
+color: #000000;
+font-size: 0.9375rem;
+border-radius: 0;
+padding: 3px 10px 5px;
+text-transform: none;
+font-weight: 500;
+}
+
+
+.chart-wrapper, .nav-tabs-custom, .sbframe-commentary {
+background: #FFFFFF;
+border: 1px solid #B2B2B2;
+border-radius: 0.25rem;
+margin-bottom: 8px;
+margin-right: 8px;
+}
+
+.navbar-brand {
+font-family: "TT Norms Pro Black";
+font-size: 38px;
+padding: 0px;
+}
+
+.chart-title {
+border-bottom: 1px solid #B7B7B7;
+font-size: 0.9375rem;
+text-align: center;
+font-weight: bold;
+padding: 7px 10px 4px;
+}
+
+.section.sidebar {
+font-family: "TT Norms Pro";
+font-size: 14px;
+background-color: #8B5A00 !important;
+color: white;
+padding: 0px;
+border: 1px solid #8B5A00;
+position: fixed;
+top: 62px;
+left: 0;
+bottom: 0;
+border-right: 1px solid #dee2e6;
+background-color: rgba(39, 128, 227, 0.1);
+padding-top: 10px;
+padding-left: 10px;
+padding-right: 10px;
+visibility: hidden;
+overflow: auto;
+}
+
+a {
+color: #28282b;
+font-size: 19px;
+font-family: TT Norms Pro;
+background-color: transparent;
+}
+
+.nav-tabs .nav-link.active, .nav-tabs>li>a.active, .nav-tabs .nav-pills>li>a.active, .nav-tabs :where(ul.nav.navbar-nav > li)>a.active, .nav-tabs .nav-item.show .nav-link, .nav-tabs .nav-item.in .nav-link, .nav-tabs .nav-item.show .nav-tabs>li>a, .nav-tabs .nav-item.in .nav-tabs>li>a, .nav-tabs .nav-item.show .nav-pills>li>a, .nav-tabs .nav-item.in .nav-pills>li>a, .nav-tabs>li.show .nav-link, .nav-tabs>li.in .nav-link, .nav-tabs>li.show .nav-tabs>li>a, .nav-tabs>li.in .nav-tabs>li>a, .nav-tabs>li.show .nav-pills>li>a, .nav-tabs>li.in .nav-pills>li>a, .nav-tabs .nav-pills>li.show .nav-link, .nav-tabs .nav-pills>li.in .nav-link, .nav-tabs .nav-pills>li.show .nav-tabs>li>a, .nav-tabs .nav-pills>li.in .nav-tabs>li>a, .nav-tabs .nav-pills>li.show .nav-pills>li>a, .nav-tabs .nav-pills>li.in .nav-pills>li>a, .nav-tabs .nav-item.show :where(ul.nav.navbar-nav > li)>a, .nav-tabs .nav-item.in :where(ul.nav.navbar-nav > li)>a, .nav-tabs>li.show :where(ul.nav.navbar-nav > li)>a, .nav-tabs>li.in :where(ul.nav.navbar-nav > li)>a, .nav-tabs .nav-pills>li.show :where(ul.nav.navbar-nav > li)>a, .nav-tabs .nav-pills>li.in :where(ul.nav.navbar-nav > li)>a, .nav-tabs .show:where(ul.nav.navbar-nav > li):not(.dropdown) .nav-link, .nav-tabs .in:where(ul.nav.navbar-nav > li):not(.dropdown) .nav-link, .nav-tabs .show:where(ul.nav.navbar-nav > li):not(.dropdown) .nav-tabs>li>a, .nav-tabs .in:where(ul.nav.navbar-nav > li):not(.dropdown) .nav-tabs>li>a, .nav-tabs .show:where(ul.nav.navbar-nav > li):not(.dropdown) .nav-pills>li>a, .nav-tabs .in:where(ul.nav.navbar-nav > li):not(.dropdown) .nav-pills>li>a, .nav-tabs .show:where(ul.nav.navbar-nav > li):not(.dropdown) :where(ul.nav.navbar-nav > li)>a, .nav-tabs .in:where(ul.nav.navbar-nav > li):not(.dropdown) :where(ul.nav.navbar-nav > li)>a {
+color: #b814aa;
+background-color: #FBFBFB;
+border-color: #B7B7B7 #B7B7B7 #FBFBFB;
+}
+
+.chart-wrapper {
+width: 100% !important;
+}
+
+pre {
+font-family: "TT Norms Pro";
+font-size: medium;
+}
+
+.btn-primary {
+color: #FBFBFB;
+background-color: #ff7100;
+border-color: #ff7100;
+}
+
+
+</style>
+
+```
+
+```{r setup-chunk, include=FALSE}
+# load libraries
+library(shinyjs)
+library(htmltools)
+library(knitr)
+library(flexdashboard)
+library(lubridate)
+library(bslib)
+library(shiny)
+library(tidyverse)
+library(janitor)
+library(plotly)
+library(MASS)
+library(R0)
+library(DT)
+library(EpiEstim)
+library(incidence2)
+library(visNetwork)
+library(webshot)
+library(webshot2)
+library(officer)
+library(networkD3)
+library(highcharter)
+library(fitdistrplus)
+library(stringr)
+library(rstan)
+library(loo)
+
+# suppress browser redirect on Stan warnings
+options(warn = -1) 
+rstan_options(auto_write = TRUE)
+
+# date parsing function
+parse_date <- function(x) {
+  x <- trimws(as.character(x))
+  parsed <- lubridate::parse_date_time(x, orders = c("dmy", "ymd", "mdy"), quiet = TRUE)
+  as.Date(parsed)
+}
+
+# helper functions for model fitting (MLE pages)
+fit_parametric_model <- function(data, dist, shift_val = 0) {
+  data_fit <- data + shift_val
+  
+  fit <- tryCatch({
+    MASS::fitdistr(data_fit, dist)
+  }, error = function(e) return(NULL))
+  
+  if(is.null(fit)) return(NULL)
+  
+  est <- fit$estimate
+  
+  if (dist == "lognormal") {
+    mean_val <- exp(est["meanlog"] + est["sdlog"]^2 / 2)
+    var_val <- (exp(est["sdlog"]^2) - 1) * exp(2 * est["meanlog"] + est["sdlog"]^2)
+    sd_val <- sqrt(var_val)
+    ci_95 <- qlnorm(0.95, est["meanlog"], est["sdlog"])
+    
+    raw_params <- data.frame(
+      parameter = c("estimate.meanlog", "estimate.sdlog", "sd.meanlog", "sd.sdlog"),
+      value = round(c(est["meanlog"], est["sdlog"], fit$sd["meanlog"], fit$sd["sdlog"]), 2)
+    )
+    
+  } else if (dist == "weibull") {
+    mean_val <- est["scale"] * gamma(1 + 1/est["shape"])
+    var_val <- est["scale"]^2 * (gamma(1 + 2/est["shape"]) - (gamma(1 + 1/est["shape"]))^2)
+    sd_val <- sqrt(var_val)
+    ci_95 <- qweibull(0.95, est["shape"], est["scale"])
+    
+    raw_params <- data.frame(
+      parameter = c("estimate.shape", "estimate.scale", "sd.shape", "sd.scale"),
+      value = round(c(est["shape"], est["scale"], fit$sd["shape"], fit$sd["scale"]), 2)
+    )
+    
+  } else if (dist == "gamma") {
+    mean_val <- est["shape"] / est["rate"]
+    var_val <- est["shape"] / (est["rate"]^2)
+    sd_val <- sqrt(var_val)
+    ci_95 <- qgamma(0.95, est["shape"], est["rate"])
+    
+    raw_params <- data.frame(
+      parameter = c("estimate.shape", "estimate.rate", "sd.shape", "sd.rate"),
+      value = round(c(est["shape"], est["rate"], fit$sd["shape"], fit$sd["rate"]), 2)
+    )
+    
+  } else if (dist == "normal") {
+    mean_val <- est["mean"]
+    sd_val <- est["sd"]
+    ci_95 <- qnorm(0.95, mean_val, sd_val)
+    var_val <- sd_val^2
+    
+    raw_params <- data.frame(
+      parameter = c("estimate.mean", "estimate.sd", "sd.mean", "sd.sd"),
+      value = round(c(est["mean"], est["sd"], fit$sd["mean"], fit$sd["sd"]), 2)
+    )
+  }
+  
+  final_mean <- as.numeric(mean_val) - shift_val
+  final_var <- as.numeric(var_val)
+  final_ci <- as.numeric(ci_95) - shift_val
+  
+  list(
+    model = toupper(dist),
+    fit_obj = fit,
+    raw_params_df = raw_params,
+    moments = c(mean=final_mean, var=final_var, ci95=final_ci),
+    aic = AIC(fit),
+    bic = BIC(fit)
+  )
+}
+
+# helper to generate plot data for incubation (MLE page)
+get_plot_data_inc <- function(data, fit_res) {
+  h_breaks <- seq(floor(min(data))-0.5, ceiling(max(data))+0.5, by = 1)
+  hist_data <- hist(data, plot = FALSE, breaks = h_breaks)
+  
+  hist_df <- data.frame(
+    from = hist_data$breaks[-length(hist_data$breaks)],
+    to = hist_data$breaks[-1],
+    y = hist_data$density,
+    x = hist_data$mids
+  )
+  
+  est <- fit_res$fit_obj$estimate
+  d_name <- tolower(fit_res$model)
+  min_x_calc <- max(0.01, min(data) - 1.5)
+  x_vals <- seq(min_x_calc, max(data) + 1.5, length.out = 500)
+  
+  suppressWarnings({
+    y_vals <- tryCatch({
+      switch(d_name,
+             "lognormal" = dlnorm(x_vals, meanlog = est["meanlog"], sdlog = est["sdlog"]),
+             "weibull" = dweibull(x_vals, shape = est["shape"], scale = est["scale"]),
+             "gamma"  = dgamma(x_vals, shape = est["shape"], rate = est["rate"])
+      )
+    }, error = function(e) return(rep(0, length(x_vals))))
+  })
+  
+  curve_data <- data.frame(x = x_vals, y = y_vals)
+  list(hist = hist_df, curve = curve_data)
+}
+
+# helper to generate plot data for serial interval (MLE page)
+get_plot_data_si <- function(data, fit_res) {
+  h_breaks <- seq(floor(min(data))-1, ceiling(max(data))+1, by = 2) 
+  hist_data <- hist(data, plot = FALSE, breaks = h_breaks)
+  hist_df <- data.frame(from = hist_data$breaks[-length(hist_data$breaks)], to = hist_data$breaks[-1], y = hist_data$density, x = hist_data$mids)
+  
+  shift_val <- if(tolower(fit_res$model) == "normal") 0 else 1
+  est <- fit_res$fit_obj$estimate
+  d_name <- tolower(fit_res$model)
+  x_vals <- seq(min(data) - 5, max(data) + 5, length.out = 500)
+  x_trans <- x_vals + shift_val
+  
+  if(shift_val > 0) x_trans[x_trans <= 0] <- NA
+  
+  suppressWarnings({
+    y_vals <- tryCatch({
+      switch(d_name,
+             "lognormal" = dlnorm(x_trans, meanlog = est["meanlog"], sdlog = est["sdlog"]),
+             "weibull"   = dweibull(x_trans, shape = est["shape"], scale = est["scale"]),
+             "gamma"     = dgamma(x_trans, shape = est["shape"], rate = est["rate"]),
+             "normal"    = dnorm(x_trans, mean = est["mean"], sd = est["sd"])
+      )
+    }, error = function(e) return(rep(0, length(x_vals))))
+  })
+  y_vals[is.na(y_vals)] <- 0
+  curve_data <- data.frame(x = x_vals, y = y_vals)
+  list(hist = hist_df, curve = curve_data)
+}
+
+# bayesian helper: get stan code (not actually used but for reference)
+get_stan_code <- function(model_name = "Weibull") {
+  if (model_name == "Weibull") {
+    return("
+      data { int<lower=0> N; vector[N] tStartExposure; vector[N] tEndExposure; vector[N] tSymptomOnset; }
+      parameters { real<lower=0> alphaInc; real<lower=0> sigmaInc; vector<lower=0, upper=1>[N] uE; }
+      transformed parameters { vector[N] tE; tE = tStartExposure + uE .* (tEndExposure - tStartExposure); }
+      model { alphaInc ~ normal(0, 10); sigmaInc ~ normal(0, 10); target += weibull_lpdf(tSymptomOnset - tE | alphaInc, sigmaInc); }
+    ")
+  } 
+  else if (model_name == "Gamma") {
+    return("
+      data { int<lower=0> N; vector[N] tStartExposure; vector[N] tEndExposure; vector[N] tSymptomOnset; }
+      parameters { real<lower=0> alphaInc; real<lower=0> sigmaInc; vector<lower=0, upper=1>[N] uE; }
+      transformed parameters { vector[N] tE; tE = tStartExposure + uE .* (tEndExposure - tStartExposure); }
+      model { alphaInc ~ normal(0, 10); sigmaInc ~ normal(0, 10); target += gamma_lpdf(tSymptomOnset - tE | alphaInc, sigmaInc); }
+    ")
+  }
+  else if (model_name == "Lognormal") {
+    return("
+      data { int<lower=0> N; vector[N] tStartExposure; vector[N] tEndExposure; vector[N] tSymptomOnset; }
+      parameters { real alphaInc; real<lower=0> sigmaInc; vector<lower=0, upper=1>[N] uE; }
+      transformed parameters { vector[N] tE; tE = tStartExposure + uE .* (tEndExposure - tStartExposure); }
+      model { alphaInc ~ normal(0, 10); sigmaInc ~ normal(0, 10); target += lognormal_lpdf(tSymptomOnset - tE | alphaInc, sigmaInc); }
+    ")
+  }
+  else if (model_name == "Normal") {
+    return("
+      data { int<lower=0> N; vector[N] tStartExposure; vector[N] tEndExposure; vector[N] tSymptomOnset; }
+      parameters { real alphaInc; real<lower=0> sigmaInc; vector<lower=0, upper=1>[N] uE; }
+      transformed parameters { vector[N] tE; tE = tStartExposure + uE .* (tEndExposure - tStartExposure); }
+      model { alphaInc ~ normal(0, 10); sigmaInc ~ normal(0, 10); target += normal_lpdf(tSymptomOnset - tE | alphaInc, sigmaInc); }
+    ")
+  }
+  return(NULL)
+}
+
+# load stan models
+get_compiled_stan_model <- function(model_name = "Weibull") {
+  
+  # object name for in-memory caching
+  obj_name <- paste0("stan_model_", model_name)
+  file_name <- paste0(tolower(model_name), "_model.rds")
+  
+  # check memory (RAM)
+  if (exists(obj_name, envir = .GlobalEnv)) {
+    return(get(obj_name, envir = .GlobalEnv))
+  }
+  
+  # check disk (load the Linux/windows binary)
+  if (file.exists(file_name)) {
+    # this reads the binary we made in WSL/Windows
+    mod <- readRDS(file_name) 
+    assign(obj_name, mod, envir = .GlobalEnv)
+    return(mod)
+  }
+  
+  stop(paste("Model file", file_name, "not found. Ensure .rds files are uploaded."))
+}
+
+```
+
+```{r global-downloads, context="server"}
+
+# global mock data handlers
+output$downloadMockIncubation <- downloadHandler(
+  filename = function() { paste0("mock_incubation-", Sys.Date(), ".csv") },
+  content = function(file) { write.csv(read.csv("Busan_real.csv"), file) }
+)
+
+output$downloadMockserial <- downloadHandler(
+  filename = function() { paste0("mock_serial-", Sys.Date(), ".csv") },
+  content = function(file) { write.csv(read.csv("Serial.csv"), file) }
+)
+
+output$downloadMockKappa <- downloadHandler(
+  filename = function() { paste0("mock_kappa_data-", Sys.Date(), ".csv") },
+  content = function(file) { write.csv(read.csv("kappa_data.csv"), file) }
+)
+
+output$downloadMockRt <- downloadHandler(
+  filename = function() { paste0("mock_Rt_data-", Sys.Date(), ".csv") },
+  content = function(file) { write.csv(read.csv("rt.csv"), file, row.names = FALSE) }
+)
+
+output$downloadMockIncubationBayes <- downloadHandler(
+  filename = function() { paste0("mock_incubation_bayesian-", Sys.Date(), ".csv") },
+  content = function(file) { 
+    write.csv(read.csv("incubation_bayesian.csv"), file, row.names = FALSE) 
+  }
+)
+
+output$downloadMockSerialBayes <- downloadHandler(
+  filename = function() { paste0("mock_serial_bayesian-", Sys.Date(), ".csv") },
+  content = function(file) { 
+    write.csv(read.csv("serial_bayesian.csv"), file, row.names = FALSE) 
+  }
+)
+
+output$downloadUserManual <- downloadHandler(
+  filename = "User_manual.pdf",
+  content = function(file){
+    file.copy("User_manual.pdf", file)
+  }
+)
+
+```
+
+Incubation Period {data-orientation=rows}
+==========================================
+
+Sidebar {.sidebar}
+--------------------
+
+```{r inc-sidebar}
+
+useShinyjs(rmd = TRUE)
+
+hr()
+
+fileInput("file1_inc", "Choose CSV File",
+          multiple = TRUE,
+          accept = c("text/csv", "text/comma-separated-values,text/plain", ".csv"))
+hr()
+selectInput(inputId = "sex_inc", label = "Sex",
+            choices = c("All", "Male", "Female"),
+            selected = "All")
+
+selectInput(inputId = "age_group_inc", label = "Age Group",
+            choices = c("All", '0 - 19', '20 - 29', '30 - 39', '40 - 49', '50 - 59', '≥ 60'),
+            selected = "All")
+hr()
+
+selectInput(inputId = "model_inc", label = "Distribution Model",
+            choices = c("Lognormal", "Weibull", "Gamma", "ALL"),
+            selected = "Lognormal")
+
+# comparison view toggle for all models
+conditionalPanel(
+  condition = "input.model_inc == 'ALL'",
+  radioButtons("view_inc", "Comparison View:",
+               choices = c("Side-by-Side", "Overlaid"),
+               selected = "Side-by-Side")
+)
+
+hr()
+valueBox(
+  value = tags$h6("Note: The Incubation Period is estimated using Maximum Likelihood Estimation (MLE).",
+                  style = "text-align: justify; font-family: Tw Cen MT; font-size: 20px; color: white;"),
+  color = "#FFFFFF")
+
+hr()
+valueBox(
+  value = downloadButton("downloadMockIncubation", "Download Mock Data", icon = icon("download")),
+  color = "#FFFFFF"
+)
+
+hr()
+valueBox(
+  value = downloadButton("downloadUserManual", "Download User Manual", icon = icon("download")),
+  color = "#FFFFFF"
+)
+
+renderImage({
+  pfad <- "one_logo.png"
+  list(
+    src = pfad,
+    contentType = 'image/png',
+    width = 210,
+    height = 60,
+    style = "position: fixed; bottom: 10px; left: 10px; cursor: pointer;",
+    onclick = "window.location.href = '[http://onehealth.or.kr/](http://onehealth.or.kr/)';"
+  )
+}, deleteFile = F)
+
+```
+
+```{r inc-data-processing}
+
+# incubation data processing pipeline
+
+dataset_inc <- eventReactive(list(input$file1_inc, input$sex_inc, input$age_group_inc), {
+  req(input$file1_inc)
+  
+  dataset <- read.csv(input$file1_inc$datapath)
+  dataset <- data.frame(lapply(dataset, trimws), stringsAsFactors = FALSE)
+  dataset <- clean_names(dataset)
+  
+  # validation start
+  validate(
+    need(all(c("date_of_exposure", "date_of_onset") %in% names(dataset)),
+         "incorrect dataset: please upload the incubation data containing 'date of exposure' and 'date of onset'.")
+  )
+  # validation end
+  
+  if("sex" %in% names(dataset)) {
+    dataset <- dataset %>%
+      mutate(sex = case_when(
+        grepl("^m", sex, ignore.case = TRUE) ~ "Male",
+        grepl("^f", sex, ignore.case = TRUE) ~ "Female",
+        TRUE ~ sex
+      ))
+  }
+  
+  if("age_group" %in% names(dataset)) {
+    dataset$age_group <- dataset$age_group %>%
+      trimws() %>%              
+      gsub("s$", "", ., ignore.case = TRUE) %>%
+      gsub("[^0-9]", "", .)
+    dataset$age_group <- suppressWarnings(as.numeric(dataset$age_group))
+    dataset <- dataset %>% mutate(age_group = case_when(
+      age_group > 0 & age_group <= 19 ~ '0 - 19',
+      age_group >= 20 & age_group <= 29 ~ '20 - 29',
+      age_group >= 30 & age_group <= 39 ~ '30 - 39',
+      age_group >= 40 & age_group <= 49 ~ '40 - 49',
+      age_group >= 50 & age_group <= 59 ~ '50 - 59',
+      TRUE ~ '≥ 60'
+    ))
+  }
+  
+  if (input$sex_inc != "All") dataset <- dataset %>% filter(sex == input$sex_inc)
+  if (input$age_group_inc != "All") dataset <- dataset %>% filter(age_group == input$age_group_inc)
+  
+  dataset
+})
+
+get_incu_data <- function() {
+  req(dataset_inc())
+  
+  data <- dataset_inc() %>%
+    mutate(
+      date_of_exposure = parse_date(date_of_exposure),
+      date_of_onset  = parse_date(date_of_onset)
+    ) %>%
+    filter(
+      !is.na(date_of_exposure),
+      !is.na(date_of_onset)
+    ) %>%
+    mutate(incuPeriods = as.numeric(date_of_onset - date_of_exposure)) %>%
+    filter(incuPeriods > 0) %>%
+    pull(incuPeriods) %>%
+    na.omit()
+  
+  if(length(data) == 0) return(NULL)
+  data
+}
+
+# master fitting logic for incubation
+fit_results_inc <- reactive({
+  data <- get_incu_data()
+  if (is.null(data) || length(data) < 3) return(NULL)
+  
+  models <- if(input$model_inc == "ALL") c("lognormal", "weibull", "gamma") else tolower(input$model_inc)
+  
+  res <- list()
+  for(m in models) {
+    # fit logic
+    suppressWarnings({
+      fit <- fit_parametric_model(data, m, shift_val = 0)
+    })
+    if(!is.null(fit)) res[[m]] <- fit
+  }
+  res
+})
+
+```
+
+## Row {data-height="180"}
+
+### Sample Size
+
+```{r inc-sample-size}
+
+renderUI({
+  # ensure dataset is available
+  req(dataset_inc())
+  # data preparation
+  ss <- nrow(dataset_inc())
+  # render the sample size text
+  htmltools::div(
+    style = "display: flex; flex-direction: column; justify-content: center; align-items: center; height: 100%; width: 100%; padding: 10px;",
+    htmltools::div(
+      style = "font-size: 30px; font-weight: bold; margin-bottom: 10px; text-align: center;font-family: Tw Cen MT;",
+      ss
+    )
+  )
+})
+
+```
+
+### Model Fit Statistics
+
+```{r inc-fit-stats}
+
+renderDT({
+  res <- fit_results_inc()
+  data <- get_incu_data()
+  
+  if (!is.null(data) && length(data) < 3) {
+    df <- data.frame(Status = paste("Insufficient data points (N=", length(data), "). Need 3+ incubation period data points."))
+  } else if (is.null(res) || length(res) == 0) {
+    df <- data.frame(Status = "No data or fit failed")
+  } else {
+    if (input$model_inc != "ALL") {
+      df <- res[[1]]$raw_params_df
+    } else {
+      df <- do.call(rbind, lapply(res, function(x) {
+        data.frame(
+          Model = x$model, 
+          AIC = round(x$aic, 2), 
+          BIC = round(x$bic, 2)
+        )
+      }))
+      df <- df[order(df$AIC), ] 
+    }
+  }
+  
+  datatable(
+    df, rownames = FALSE,
+    options = list(
+      dom = "Brt",
+      buttons = list("csv", "excel", "pdf"),
+      pageLength = nrow(df)
+    ),
+    extensions = "Buttons"
+  ) %>% 
+    formatStyle(columns = names(df), `font-size` = "12px") %>%
+    formatStyle(columns = intersect(names(df), c("parameter", "Model")), fontWeight = "bold")
+})
+
+```
+
+### Model Parameters
+
+```{r inc-model-params}
+
+renderDT({
+  res <- fit_results_inc()
+  data <- get_incu_data()
+  
+  if (!is.null(data) && length(data) < 3) {
+    df <- data.frame(Status = "Insufficient Data")
+  } else if (is.null(res) || length(res) == 0) {
+    df <- data.frame(Status = "No data")
+  } else {
+    fmt_moments <- function(x) {
+      data.frame(
+        parameter = c(paste(x$model, "Mean"), paste(x$model, "Variance"), "95th Percentile"),
+        value = round(c(x$moments["mean"], x$moments["var"], x$moments["ci95"]), 3)
+      )
+    }
+    
+    if (input$model_inc != "ALL") {
+      df <- fmt_moments(res[[1]])
+    } else {
+      df <- do.call(rbind, lapply(res, function(x) {
+        data.frame(
+          Model = x$model,
+          `Mean` = round(x$moments["mean"], 3),
+          `Variance` = round(x$moments["var"], 3),
+          `95th Percentile` = round(x$moments["ci95"], 3),
+          check.names = FALSE
+        )
+      }))
+    }
+  }
+  
+  datatable(
+    df, rownames = FALSE,
+    options = list(
+      dom = "Brt",
+      buttons = list("csv", "excel", "pdf"),
+      pageLength = nrow(df)
+    ),
+    extensions = "Buttons"
+  ) %>% 
+    formatStyle(columns = names(df), `font-size` = "12px") %>%
+    formatStyle(columns = intersect(names(df), c("parameter", "Model")), fontWeight = "bold")
+})
+
+```
+
+Column {.tabset .tabset-fade }
+-------------------------------
+
+### Distribution Plots
+
+```{r inc-histograms}
+
+renderHighchart({
+  data <- get_incu_data()
+  res <- fit_results_inc()
+  
+  if (is.null(data) || length(data) < 3 || is.null(res) || length(res) == 0) {
+    return(highchart() %>% hc_title(text="Insufficient Data (N < 3)"))
+  }
+  
+  col_map <- list(lognormal="#00BFFF", weibull="#FF8C00", gamma="#228B22")
+  line_col_overlaid <- list(lognormal="#000000", weibull="#FF0000", gamma="#008000") 
+  
+  # style definitions
+  axis_style <- list(color = "#000000", fontSize = "16px", fontWeight = "bold")
+  label_style <- list(color = "#000000", fontSize = "14px", fontWeight = "bold")
+  menu_items <- list("viewFullscreen", "separator", "downloadPNG", "downloadPDF", "downloadSVG")
+  
+  if (input$model_inc == "ALL") {
+    
+    # calculate global max y for constant scale
+    max_y <- 0
+    all_plot_data <- list()
+    for(m in names(res)) {
+      pd <- get_plot_data_inc(data, res[[m]])
+      local_max <- max(c(pd$hist$y, pd$curve$y), na.rm = TRUE)
+      if(local_max > max_y) max_y <- local_max
+      all_plot_data[[m]] <- pd
+    }
+    max_y <- max_y * 1.05
+    
+    # sub-case a: overlaid (combined) view
+    if (input$view_inc == "Overlaid") {
+      pd <- all_plot_data[[1]] # base hist data
+      
+      hc <- highchart() %>%
+        hc_chart(type = "line", style = list(fontFamily = "Tw Cen MT"), backgroundColor = "#FFFFFF") %>%
+        hc_title(text = "Combined Model Comparison", style = list(fontSize="16px", fontWeight="bold")) %>%
+        hc_plotOptions(
+          series = list(pointPlacement = "on"), # fix for axis alignment
+          column = list(grouping = FALSE, pointPadding = 0, groupPadding = 0, borderWidth = 0.25)
+        ) %>%
+        hc_xAxis(
+          title = list(text = "Incubation Periods", style = axis_style), 
+          allowDecimals = FALSE, 
+          lineColor = "#000000", lineWidth = 1, tickWidth = 1, tickColor = "#000000",
+          labels = list(style = label_style),
+          min = 0, minPadding = 0, startOnTick = TRUE # fix for gap removal
+        ) %>%
+        hc_yAxis(
+          title = list(text = "Density", style = axis_style), 
+          gridLineWidth = 0, 
+          lineWidth = 1, lineColor="#000000", tickWidth = 1, tickColor = "#000000",
+          labels = list(style = label_style),
+          min = 0, max = max_y, minPadding = 0, startOnTick = TRUE # fix for gap removal
+        ) %>%
+        # add histogram
+        hc_add_series(
+          data = list_parse(pd$hist),
+          type = "column",
+          name = "Observed Data",
+          color = "#D3D3D3", 
+          borderColor = "#FFFFFF", borderWidth = 0.25,
+          pointRange = 1,
+          zIndex = 0
+        )
+      
+      # add curves
+      for(m in names(res)) {
+        nm <- tolower(m)
+        pd_model <- all_plot_data[[m]]
+        
+        hc <- hc %>% hc_add_series(
+          data = pd_model$curve,
+          type = "line",
+          name = paste(m, "Fit"),
+          color = line_col_overlaid[[nm]], 
+          lineWidth = 2, marker = list(enabled = FALSE),
+          zIndex = 2
+        )
+      }
+      
+      hc <- hc %>% hc_exporting(enabled = TRUE, buttons = list(contextButton = list(menuItems = menu_items)))
+      return(hc)
+      
+    } else {
+      # sub-case b: side-by-side (composite) view
+      hc <- highchart() %>%
+        hc_chart(type = "column", style = list(fontFamily = "Tw Cen MT"), backgroundColor = "#FFFFFF") %>%
+        hc_title(text = "Distribution Comparison", style = list(fontSize="16px", fontWeight="bold")) %>%
+        hc_plotOptions(
+          series = list(pointPlacement = "on"), # User Fix for alignment
+          column = list(grouping = FALSE, pointPadding = 0, groupPadding = 0, borderWidth = 0.25)
+        ) %>%
+        
+        # define 3 x-axes
+        hc_xAxis_multiples(
+          list(title = list(text = "Lognormal", style = axis_style), left = "0%", width = "30%", lineWidth=1, lineColor="black", tickWidth=1, tickColor="black", labels=list(style = label_style), min=0, minPadding=0, startOnTick=TRUE),
+          list(title = list(text = "Weibull", style = axis_style), left = "35%", width = "30%", offset = 0, lineWidth=1, lineColor="black", tickWidth=1, tickColor="black", labels=list(style = label_style), min=0, minPadding=0, startOnTick=TRUE),
+          list(title = list(text = "Gamma", style = axis_style), left = "70%", width = "30%", offset = 0, lineWidth=1, lineColor="black", tickWidth=1, tickColor="black", labels=list(style = label_style), min=0, minPadding=0, startOnTick=TRUE)
+        ) %>%
+        
+        # define 3 y-axes
+        hc_yAxis_multiples(
+          list(title = list(text = "Density", style = axis_style), left = "0%", width = "30%", lineWidth=1, lineColor="black", tickWidth=1, tickColor="black", gridLineWidth=0, labels=list(style = label_style), min=0, max=max_y, minPadding=0, startOnTick=TRUE),
+          list(title = list(text = "Density", style = axis_style), left = "35%", width = "30%", offset = 0, lineWidth=1, lineColor="black", tickWidth=1, tickColor="black", gridLineWidth=0, labels=list(style = label_style), min=0, max=max_y, minPadding=0, startOnTick=TRUE),
+          list(title = list(text = "Density", style = axis_style), left = "70%", width = "30%", offset = 0, lineWidth=1, lineColor="black", tickWidth=1, tickColor="black", gridLineWidth=0, labels=list(style = label_style), min=0, max=max_y, minPadding=0, startOnTick=TRUE)
+        ) %>%
+        
+        hc_exporting(
+          enabled = TRUE,
+          buttons = list(contextButton = list(menuItems = menu_items)),
+          chartOptions = list(chart = list(backgroundColor = "#FFFFFF"))
+        ) %>%
+        hc_legend(enabled = FALSE)
+      
+      axes_idx <- list(lognormal=0, weibull=1, gamma=2)
+      
+      for(m in names(res)) {
+        nm <- tolower(m)
+        idx <- axes_idx[[nm]]
+        if(is.null(idx)) next 
+        
+        pd <- all_plot_data[[m]]
+        
+        hc <- hc %>%
+          hc_add_series(
+            data = list_parse(pd$hist),
+            type = "column",
+            color = col_map[[nm]],
+            xAxis = idx, yAxis = idx,
+            borderColor = "#FFFFFF", borderWidth = 0.25,
+            pointRange = 1, 
+            name = paste(m, "Hist")
+          ) %>%
+          hc_add_series(
+            data = pd$curve,
+            type = "line",
+            color = "#000000",
+            xAxis = idx, yAxis = idx,
+            lineWidth = 1.5, marker = list(enabled = FALSE),
+            name = paste(m, "Fit")
+          )
+      }
+      return(hc)
+    }
+    
+  } else {
+    # case 2: single model
+    m <- names(res)[[1]]
+    pd <- get_plot_data_inc(data, res[[1]])
+    nm <- tolower(m)
+    
+    highchart() %>%
+      hc_chart(style = list(fontFamily = "Tw Cen MT"), backgroundColor = "#FFFFFF") %>%
+      hc_title(text = paste(str_to_title(m), "Distribution"), style = list(fontSize="16px", fontWeight="bold")) %>%      
+      hc_plotOptions(
+        series = list(pointPlacement = "on"), # fix for alignment
+        column = list(grouping = FALSE, pointPadding = 0, groupPadding = 0, borderWidth = 0.25)
+      ) %>%
+      hc_add_series(
+        data = list_parse(pd$hist),
+        type = "column",
+        name = "Histogram",
+        color = col_map[[nm]], 
+        borderColor = "#FFFFFF", borderWidth = 0.25,
+        pointRange = 1
+      ) %>%
+      hc_add_series(
+        data = pd$curve,
+        type = "line",
+        name = "Fit",
+        color = "#000000",
+        lineWidth = 1.5, marker = list(enabled = FALSE)
+      ) %>%
+      hc_xAxis(
+        title = list(text = "Incubation Periods", style = axis_style), 
+        min = floor(min(data))-1, tickInterval = 1,
+        lineColor = "#000000", lineWidth = 1, tickWidth = 1, tickColor = "#000000",
+        labels = list(style = label_style),
+        min = 0, minPadding = 0, startOnTick = TRUE # fix for gap removal
+      ) %>%
+      hc_yAxis(
+        title = list(text = "Density", style = axis_style),
+        gridLineWidth = 0,
+        lineWidth = 1, lineColor = "#000000", tickWidth = 1, tickColor = "#000000",
+        labels = list(style = label_style),
+        min = 0, minPadding = 0, startOnTick = TRUE # fix for gap removal
+      ) %>%
+      hc_exporting(
+        enabled = TRUE,
+        buttons = list(contextButton = list(menuItems = menu_items)),
+        chartOptions = list(chart = list(backgroundColor = "#FFFFFF"))
+      )
+  }
+})
+
+```
+
+### Dataset Preview
+
+```{r inc-dataset-preview}
+renderDataTable({
+  dataset_inc()
+}, options = list(
+  pageLength = 10, 
+  paging = TRUE, 
+  striped = TRUE, 
+  bordered = TRUE,
+  hover = TRUE  
+), rownames = FALSE)
+
+```
+
+
+Incubation Period (Bayesian) {data-orientation=rows}
+==========================================
+
+Sidebar {.sidebar}
+--------------------
+
+```{r inc-bayes-sidebar}
+
+hr()
+fileInput("file_bayes_inc", "Choose CSV File",
+          multiple = FALSE,
+          accept = c("text/csv", "text/comma-separated-values", ".csv"))
+
+hr()
+# stratification inputs
+selectInput(inputId = "sex_bayes_inc", label = "Sex",
+            choices = c("All", "Male", "Female"),
+            selected = "All")
+
+selectInput(inputId = "age_bayes_inc", label = "Age Group",
+            choices = c("All", '0 - 19', '20 - 29', '30 - 39', '40 - 49', '50 - 59', '≥ 60'),
+            selected = "All")
+
+hr()
+# model selection
+selectInput("bayes_model_select", "Distribution Model", 
+            choices = c("Lognormal","Weibull", "Gamma"), 
+            selected = "Lognormal")
+
+sliderInput("iter_count_inc", "Iterations (Max 4000)", value = 1000, min = 500, max = 4000, step = 100)
+
+hr()
+actionButton("run_bayes_inc", "Run Bayesian Model", icon = icon("play"), class = "btn-primary", width = "100%")
+
+hr()
+valueBox(value = tags$h6("Note: This model uses Bayesian MCMC (rstan). Calculations typically take 30-45 seconds.",
+                         style = "text-align: justify; font-family: Tw Cen MT; font-size: 16px; color: white;"), 
+         color = "#333333")
+
+hr()
+
+valueBox(
+  value = downloadButton("downloadMockIncubationBayes", "Download Mock Data", icon = icon("download")),
+  color = "#FFFFFF"
+)
+
+renderImage({
+  pfad <- "one_logo.png"
+  list(
+    src = pfad,
+    contentType = 'image/png',
+    width = 210,
+    height = 60,
+    style = "position: fixed; bottom: 10px; left: 10px; cursor: pointer;",
+    onclick = "window.location.href = '[http://onehealth.or.kr/](http://onehealth.or.kr/)';"
+  )
+}, deleteFile = F)
+
+```
+
+
+```{r inc-bayes-data-processing}
+
+# global data loading (runs once per file upload)
+bayes_inc_global <- reactive({
+  req(input$file_bayes_inc)
+  
+  # robust read
+  tryCatch({
+    df <- read.csv(input$file_bayes_inc$datapath, stringsAsFactors = FALSE)
+  }, error = function(e) {
+    validate(need(FALSE, "error reading file. please ensure it is a valid csv."))
+  })
+  
+  df <- clean_names(df) 
+  
+  # validation start
+  validate(
+    need(all(c("symptom_onset", "exp_date_min", "exp_date_max") %in% names(df)),
+         "incorrect dataset: please upload incubation bayesian data containing 'symptom onset', 'exp date min', and 'exp date max'.")
+  )
+  # validation end
+  
+  # standardize sex
+  if("sex" %in% names(df)) {
+    df <- df %>% mutate(sex = case_when(
+        grepl("^m", sex, ignore.case = TRUE) ~ "Male",
+        grepl("^f", sex, ignore.case = TRUE) ~ "Female",
+        TRUE ~ sex
+      ))
+  }
+  
+  # standardize age group
+  if("age" %in% names(df)) {
+    df$age <- suppressWarnings(as.numeric(df$age))
+    df <- df %>% mutate(age_group = case_when(
+      age > 0 & age <= 19 ~ '0 - 19',
+      age >= 20 & age <= 29 ~ '20 - 29',
+      age >= 30 & age <= 39 ~ '30 - 39',
+      age >= 40 & age <= 49 ~ '40 - 49',
+      age >= 50 & age <= 59 ~ '50 - 59',
+      TRUE ~ '≥ 60'
+    ))
+  }
+  
+  # parse dates globally
+  df <- df %>%
+    mutate(
+      date_symp = parse_date(symptom_onset),
+      date_min  = parse_date(exp_date_min),
+      date_max  = parse_date(exp_date_max)
+    )
+  
+  df
+})
+
+# filtering logic
+bayes_inc_data <- reactive({
+  req(bayes_inc_global())
+  df <- bayes_inc_global()
+  
+  # filter raw data
+  if (input$sex_bayes_inc != "All" && "sex" %in% names(df)) {
+    df <- df %>% filter(sex == input$sex_bayes_inc)
+  }
+  if (input$age_bayes_inc != "All" && "age_group" %in% names(df)) {
+    df <- df %>% filter(age_group == input$age_bayes_inc)
+  }
+  
+  # capture count before cleaning
+  n_before_cleaning <- nrow(df)
+  
+  # model prep logic
+  df <- df %>%
+    filter(!is.na(date_symp)) %>% # must have symptom date
+    mutate(
+      tSymptomOnset = as.integer(date_symp - as.Date("2019-12-31")),
+      tStartExposure = as.integer(date_min - as.Date("2019-12-31")),
+      tEndExposure = as.integer(date_max - as.Date("2019-12-31"))
+    ) %>%
+    # logic update!!
+    # keep rows with at least one exposure date
+    filter(!is.na(tStartExposure) | !is.na(tEndExposure)) %>%
+    # impute missing end date (assume exposure continued until symptoms)
+    mutate(tEndExposure = ifelse(is.na(tEndExposure), tSymptomOnset, tEndExposure)) %>%
+    # impute missing start date (assume exposure started 14 days before end date)
+    mutate(tStartExposure = ifelse(is.na(tStartExposure), tEndExposure - 14, tStartExposure)) %>% # you can update the window here
+    # final safety check: end exposure cannot be after symptoms
+    mutate(tEndExposure = ifelse(tEndExposure > tSymptomOnset, tSymptomOnset, tEndExposure)) %>%
+    # ensure start is before end
+    filter(tStartExposure <= tEndExposure)
+  
+  # capture count after
+  n_final <- nrow(df)
+  n_dropped <- n_before_cleaning - n_final
+  
+  # notify user
+  if (n_dropped > 0) {
+    showNotification(
+      paste0("data loaded: ", n_final, " valid rows used. (", n_dropped, " rows removed: missing both exposure dates or invalid timeline)"),
+      type = "warning",
+      duration = 5 
+    )
+  } else {
+    showNotification(
+      paste0("data successfully loaded: ", n_final, " rows ready."),
+      type = "message",
+      duration = 3 
+    )
+  }
+  
+  df
+})
+
+# modeling
+bayes_inc_fit <- eventReactive(input$run_bayes_inc, {
+  
+  # lock button
+  shinyjs::disable("run_bayes_inc")
+  
+  # unlock button when done
+  on.exit({
+    shinyjs::enable("run_bayes_inc")
+  })
+  
+  # double clean
+  gc()
+  gc() 
+  
+  req(bayes_inc_data())
+  df <- bayes_inc_data()
+
+  validate(
+    need(nrow(df) >= 5, "insufficient data: you need at least 5 observations to run this model.")
+  )
+
+  stan_data <- list(
+    N = nrow(df),
+    tStartExposure = df$tStartExposure,
+    tEndExposure = df$tEndExposure,
+    tSymptomOnset = df$tSymptomOnset
+  )
+
+  withProgress(message = 'running bayesian model...', detail = 'initializing...', value = 0, {
+
+    mod <- get_compiled_stan_model(input$bayes_model_select)
+    incProgress(0.1, detail = "sampling chains...")
+
+    fit <- rstan::sampling(
+      object = mod,
+      data = stan_data,
+      chains = 1,
+      cores = 1,
+      iter = input$iter_count_inc,
+      warmup = input$iter_count_inc / 2,
+      refresh = 0,
+      pars = c("alphaInc", "sigmaInc"), # keep light!
+      control = list(adapt_delta = 0.95)
+    )
+
+    incProgress(0.8, detail = "extracting posteriors...")
+
+    params <- rstan::extract(fit)
+
+    list(
+      fit_obj = fit,
+      iterations = input$iter_count_inc,
+      model_name = input$bayes_model_select,
+      alpha = params$alphaInc,
+      sigma = params$sigmaInc,
+      alpha_summary = quantile(params$alphaInc, probs = c(0.025, 0.5, 0.975)),
+      sigma_summary = quantile(params$sigmaInc, probs = c(0.025, 0.5, 0.975))
+    )
+  })
+})
+
+```
+
+## Row {data-height="180"}
+
+### Sample Size
+
+```{r inc-bayes-sample-size}
+
+renderUI({
+  req(bayes_inc_data())
+  
+  ss <- nrow(bayes_inc_data())
+  
+  htmltools::div(
+    style = "display: flex; flex-direction: column; justify-content: center; align-items: center; height: 100%; width: 100%; padding: 10px;",
+    htmltools::div(
+      style = "font-size: 40px; font-weight: bold; margin-bottom: 5px; text-align: center; font-family: Tw Cen MT; color: #000000;",
+      ss
+    ),
+    htmltools::div(
+      style = "font-size: 14px; text-align: center; color: #666;",
+      "Observations"
+    )
+  )
+})
+
+```
+
+
+### Model Statistics (Median & 95% CrI)
+
+```{r inc-bayes-model-stats}
+
+renderDT({
+  req(bayes_inc_fit())
+  res <- bayes_inc_fit()
+  
+  # dynamic parameter labels & mean calculation
+  if (res$model_name == "Lognormal") {
+    p_names <- c("MeanLog (Alpha)", "SDLog (Sigma)")
+    # mean of lognormal = exp(mu + sigma^2/2)
+    post_means <- exp(res$alpha + (res$sigma^2)/2)
+  } else if (res$model_name == "Gamma") {
+    p_names <- c("Shape (Alpha)", "Rate (Sigma)")
+    # mean of gamma = shape / rate
+    post_means <- res$alpha / res$sigma
+  } else {
+    # weibull
+    p_names <- c("Shape (Alpha)", "Scale (Sigma)")
+    # mean of weibull = scale * gamma(1 + 1/shape)
+    post_means <- res$sigma * gamma(1 + 1/res$alpha)
+  }
+  
+  df_stats <- data.frame(
+    Parameter = p_names,
+    `Median` = round(c(res$alpha_summary[2], res$sigma_summary[2]), 3),
+    `Lower_95_CrI` = round(c(res$alpha_summary[1], res$sigma_summary[1]), 3),
+    `Upper_95_CrI` = round(c(res$alpha_summary[3], res$sigma_summary[3]), 3)
+  )
+  
+  mean_summ <- quantile(post_means, probs = c(0.025, 0.5, 0.975))
+  
+  df_mean <- data.frame(
+    Parameter = "Mean Incubation Period",
+    `Median` = round(mean_summ[2], 3),
+    `Lower_95_CrI` = round(mean_summ[1], 3),
+    `Upper_95_CrI` = round(mean_summ[3], 3)
+  )
+  
+  final_df <- rbind(df_stats, df_mean)
+  
+  fname <- paste0("Incubation_Bayesian_Stats_", Sys.Date())
+  
+  datatable(
+    final_df, 
+    rownames = FALSE, 
+    extensions = 'Buttons',
+    options = list(
+      dom = 'Brt',
+      buttons = list(
+        list(extend = "csv", filename = fname),
+        list(extend = "excel", filename = fname),
+        list(extend = "pdf", filename = fname)
+      ),
+      columnDefs = list(list(className = 'dt-center', targets = "_all"))
+    )
+  ) %>%
+    formatStyle(columns = "Parameter", fontWeight = "bold")
+})
+
+```
+
+Column {.tabset .tabset-fade }
+-------------------------------
+
+
+### Dataset Preview
+
+```{r inc-bayes-dataset-preview}
+
+renderDataTable({
+  bayes_inc_data()
+}, options = list(
+  pageLength = 10, 
+  paging = TRUE, 
+  striped = TRUE, 
+  bordered = TRUE, 
+  hover = TRUE  
+), rownames = FALSE)
+
+```
+
+
+### Posterior Distribution (Median Fit)
+
+```{r inc-bayes-posterior-dist}
+
+renderHighchart({
+  req(bayes_inc_fit())
+  res <- bayes_inc_fit()
+  
+  alpha_est <- median(res$alpha)
+  sigma_est <- median(res$sigma)
+  x_vals <- seq(0, 30, length.out = 200)
+  
+  # dynamic distribution logic
+  if (res$model_name == "Gamma") {
+    y_vals <- dgamma(x_vals, shape = alpha_est, rate = sigma_est)
+  } else if (res$model_name == "Lognormal") {
+    y_vals <- dlnorm(x_vals, meanlog = alpha_est, sdlog = sigma_est)
+  } else {
+    y_vals <- dweibull(x_vals, shape = alpha_est, scale = sigma_est)
+  }
+  
+  model_label <- tools::toTitleCase(res$model_name)
+  menu_items <- list("viewFullscreen", "separator", "downloadPNG", "downloadPDF", "downloadSVG")
+  
+  # theme consistency
+  axis_title_style <- list(color = "#000000", fontSize = "16px", fontWeight = "bold", fontFamily = "Tw Cen MT")
+  axis_label_style <- list(color = "#000000", fontSize = "14px", fontWeight = "bold", fontFamily = "Tw Cen MT")
+  
+  highchart() %>%
+    hc_chart(style = list(fontFamily = "Tw Cen MT"), backgroundColor = "#FFFFFF") %>%
+    
+    hc_title(
+      text = paste0("Posterior Predictive Distribution (", model_label, ")"),
+      style = list(fontSize = "18px", fontWeight = "bold", fontFamily = "Tw Cen MT", color = "#000000")
+    ) %>%
+    
+    hc_subtitle(
+      text = paste0("Based on ", res$iterations, " MCMC iterations"),
+      style = list(fontSize = "14px", fontFamily = "Tw Cen MT", color = "#666666")
+    ) %>%
+    
+    hc_exporting(
+      enabled = TRUE, 
+      filename = paste0("Incubation_Posterior_Distribution_", Sys.Date()),
+      buttons = list(contextButton = list(menuItems = menu_items))
+    ) %>%
+    
+    hc_add_series(
+      data = data.frame(x = x_vals, y = y_vals),
+      type = "area",
+      name = "Posterior Density",
+      color = "rgba(65, 105, 225, 0.5)",
+      marker = list(enabled = FALSE),      
+      lineWidth = 2
+    ) %>%
+    
+    # axis styling
+    hc_xAxis(
+      title = list(text = "Incubation Period (Days)", style = axis_title_style),
+      labels = list(style = axis_label_style),
+      min = 0, minPadding = 0, startOnTick = TRUE,
+      lineColor = "#000000", lineWidth = 1, tickColor = "#000000"
+    ) %>%
+    
+    hc_yAxis(
+      title = list(text = "Density", style = axis_title_style),
+      labels = list(style = axis_label_style),
+      min = 0, minPadding = 0, startOnTick = TRUE,
+      gridLineWidth = 0, 
+      lineColor = "#000000", lineWidth = 1, tickColor = "#000000"
+    ) %>%
+    
+    hc_tooltip(valueDecimals = 4, style = list(fontFamily = "Tw Cen MT"))
+})
+
+```
+
+### Trace Plot (Convergence Check)
+
+```{r inc-bayes-trace-plot}
+
+renderPlotly({
+  req(bayes_inc_fit())
+  
+  # base plot with grid lines but customized fonts and black axis
+  p <- rstan::traceplot(bayes_inc_fit()$fit_obj, 
+                        pars = c("alphaInc", "sigmaInc"),
+                        linewidth = 0.25) + 
+    theme_bw() + 
+    ggtitle("Trace Plot: Alpha & Sigma") +
+    theme(
+      text = element_text(family = "Tw Cen MT"),
+      plot.title = element_text(size = 14, face = "bold", hjust = 0.5),
+      axis.title = element_text(size = 12, face = "bold"),
+      axis.text = element_text(size = 10, color = "black"),
+      axis.line = element_line(color = "black"), 
+      strip.background = element_rect(fill = "#f0f0f0"), 
+      strip.text = element_text(face = "bold")
+    )
+  
+  ggplotly(p) %>%
+    config(
+      toImageButtonOptions = list(
+        format = "png",
+        filename = paste0("Incubation_Trace_Plot_", Sys.Date()),
+        height = 500,
+        width = 700,
+        scale = 2 
+      )
+    ) %>%
+    layout(font = list(family = "Tw Cen MT"))
+})
+
+```
+
+Serial Interval {data-orientation=rows}
+=========================================
+
+Sidebar {.sidebar}
+---------------------
+
+```{r si-sidebar}
+hr()
+fileInput("file1_si", "Choose CSV File",
+          multiple = TRUE,
+          accept = c("text/csv", "text/comma-separated-values,text/plain", ".csv"))
+hr()
+selectInput(inputId = "sex_si", label = "Sex",
+            choices = c("All", "Male", "Female"),
+            selected = "All")
+
+selectInput(inputId = "age_group_si", label = "Age Group",
+            choices = c("All", '0 - 19', '20 - 29', '30 - 39', '40 - 49', '50 - 59', '≥ 60'),
+            selected = "All")
+hr()
+
+selectInput("model_si", "Distribution Model:",
+            choices = c("Normal", "Weibull", "Gamma", "Lognormal", "ALL"),
+            selected = "Normal")
+
+# comparison view toggle for si
+conditionalPanel(
+  condition = "input.model_si == 'ALL'",
+  radioButtons("view_si", "Comparison View:",
+               choices = c("Side-by-Side", "Overlaid"),
+               selected = "Side-by-Side")
+)
+
+hr()
+
+valueBox(
+  value = downloadButton("downloadMockserial", "Download Mock Data", icon = icon("download")),
+  color = "#FFFFFF"
+)
+
+hr()
+
+valueBox(
+  value = tags$h6("Note: Parametric models (Weibull/Gamma/Lognormal) are fit on (Data + 1) to handle zeros, then estimates are shifted back. Normal model is fit on raw data.",
+                  style = "text-align: justify; font-family: Tw Cen MT; font-size: 16px; color: white;"),
+  color = "#FFFFFF")
+
+hr()
+# logo image
+renderImage({
+  list(
+    src = "one_logo.png",
+    contentType = 'image/png',
+    width = 210,
+    height = 60,
+    style = "position: fixed; bottom: 10px; left: 10px; cursor: pointer;",
+    onclick = "window.location.href = '[http://onehealth.or.kr/](http://onehealth.or.kr/)';"
+  )
+}, deleteFile = FALSE)
+
+```
+
+
+```{r si-data-processing}
+
+# data processing for serial interval
+dataset_si <- eventReactive(list(input$file1_si, input$sex_si, input$age_group_si), {
+  req(input$file1_si)
+  
+  dataset <- read.csv(input$file1_si$datapath)
+  dataset <- data.frame(lapply(dataset, trimws), stringsAsFactors = FALSE)
+  dataset <- clean_names(dataset)
+  
+  # validation start
+  validate(
+    need(all(c("id", "source_of_infection", "date_of_onset") %in% names(dataset)),
+         "incorrect dataset: please upload serial interval data containing 'id', 'source of infection', and 'date of onset'.")
+  )
+  # validation end
+  
+  # more robust cleaning
+  if("age_group" %in% names(dataset)) {
+    dataset$age_group <- dataset$age_group %>%
+      gsub("s$", "", ., ignore.case = TRUE) %>%
+      gsub("[^0-9]", "", .)
+    dataset$age_group <- suppressWarnings(as.numeric(dataset$age_group))
+    dataset <- dataset %>% mutate(age_group = case_when(
+      age_group > 0 & age_group <= 19 ~ '0 - 19',
+      age_group >= 20 & age_group <= 29 ~ '20 - 29',
+      age_group >= 30 & age_group <= 39 ~ '30 - 39',
+      age_group >= 40 & age_group <= 49 ~ '40 - 49',
+      age_group >= 50 & age_group <= 59 ~ '50 - 59',
+      TRUE ~ '≥ 60'
+    ))
+  }
+  
+  if("sex" %in% names(dataset)) {
+    dataset <- dataset %>%
+      mutate(sex = case_when(
+        grepl("^m", sex, ignore.case = TRUE) ~ "Male",
+        grepl("^f", sex, ignore.case = TRUE) ~ "Female",
+        TRUE ~ sex
+      ))
+  }
+  
+  dataset$id <- as.numeric(gsub("[^0-9]", "", dataset$id))
+  dataset$source_of_infection <- as.numeric(gsub("[^0-9]", "", dataset$source_of_infection))
+  dataset$date_of_exposure <- parse_date(dataset$date_of_exposure)
+  dataset$date_of_onset <- parse_date(dataset$date_of_onset)
+  dataset$source_date <- dataset$date_of_onset[match(dataset$source_of_infection, dataset$id)]
+  
+  if (input$sex_si != "All") dataset <- dataset %>% filter(sex == input$sex_si)
+  if (input$age_group_si != "All") dataset <- dataset %>% filter(age_group == input$age_group_si)
+  
+  dataset
+})
+
+get_serial_data <- function() {
+  req(dataset_si())
+  df <- dataset_si()
+  
+  required_cols <- c("id", "source_of_infection", "date_of_onset", "source_date")
+  if (!all(required_cols %in% names(df))) stop("required columns not found in dataset")
+  
+  df <- df %>%
+    filter(!is.na(date_of_onset), !is.na(source_date)) %>%
+    mutate(serial = as.numeric(date_of_onset - source_date)) %>%
+    filter(!is.na(serial))
+  
+  if (nrow(df) == 0) return(NULL)
+  
+  df$serial
+}
+
+# master fitting logic for si
+fit_results_si <- reactive({
+  data <- get_serial_data()
+  if (is.null(data) || length(data) < 3) return(NULL)
+  
+  models <- if(input$model_si == "ALL") c("normal", "weibull", "gamma", "lognormal") else tolower(input$model_si)
+  
+  res <- list()
+  for(m in models) {
+    # shift logic: normal model=0, others=1
+    shift_val <- if(m == "normal") 0 else 1
+    
+    # for non-normal models, we must ensure data + shift > 0.
+    if(m != "normal") {
+      valid_indices <- (data + shift_val) > 0
+      data_for_fit <- data[valid_indices]
+    } else {
+      data_for_fit <- data
+    }
+    
+    # check if we still have enough data after filtering
+    if(length(data_for_fit) < 3) next
+    
+    suppressWarnings({
+      fit <- fit_parametric_model(data_for_fit, m, shift_val = shift_val)
+    })
+    
+    if(!is.null(fit)) res[[m]] <- fit
+  }
+  res
+})
+
+```
+
+
+## Row {data-height="180"}
+
+### Sample Size
+
+```{r si-sample-size}
+
+renderUI({
+  req(dataset_si())
+  ss <- nrow(dataset_si())
+  htmltools::div(
+    style = "display: flex; flex-direction: column; justify-content: center; align-items: center; height: 100%; width: 100%; padding: 10px;",
+    htmltools::div(
+      style = "font-size: 30px; font-weight: bold; margin-bottom: 10px; text-align: center;font-family: Tw Cen MT;",
+      ss
+    )
+  )
+})
+
+```
+
+### Model Fit Statistics
+
+```{r si-model-fit-stats}
+
+renderDT({
+  res <- fit_results_si()
+  data <- get_serial_data()
+  
+  if (!is.null(data) && length(data) < 3) {
+    df <- data.frame(Status = "Insufficient Data (N < 3).")
+  } else if (is.null(res) || length(res) == 0) {
+    df <- data.frame(Status = "No data or fit failed")
+  } else {
+    if (input$model_si != "ALL") {
+      df <- res[[1]]$raw_params_df
+    } else {
+      df <- do.call(rbind, lapply(res, function(x) {
+        data.frame(
+          Model = x$model, 
+          AIC = round(x$aic, 2), 
+          BIC = round(x$bic, 2)
+        )
+      }))
+      df <- df[order(df$AIC), ]
+    }
+  }
+  
+  datatable(
+    df, rownames = FALSE,
+    options = list(dom = "Brt", buttons = list("csv", "excel", "pdf"), pageLength = nrow(df)),
+    extensions = "Buttons"
+  ) %>% 
+    formatStyle(columns = names(df), `font-size` = "12px") %>%
+    formatStyle(columns = intersect(names(df), c("parameter", "Model")), fontWeight = "bold")
+})
+
+```
+
+### Model Parameters
+
+```{r si-model-params}
+
+renderDT({
+  res <- fit_results_si()
+  data <- get_serial_data()
+  
+  if (!is.null(data) && length(data) < 3) {
+    df <- data.frame(Status = "Insufficient Data")
+  } else if (is.null(res) || length(res) == 0) {
+    df <- data.frame(Status = "No data")
+  } else {
+    fmt_moments <- function(x) {
+      data.frame(
+        parameter = c(paste(x$model, "Mean"), paste(x$model, "Variance"), "95th Percentile"),
+        value = round(c(x$moments["mean"], x$moments["var"], x$moments["ci95"]), 3)
+      )
+    }
+    
+    if (input$model_si != "ALL") {
+      df <- fmt_moments(res[[1]])
+    } else {
+      df <- do.call(rbind, lapply(res, function(x) {
+        data.frame(
+          Model = x$model,
+          `Mean` = round(x$moments["mean"], 3),
+          `Variance` = round(x$moments["var"], 3),
+          `95th Percentile` = round(x$moments["ci95"], 3),
+          check.names = FALSE
+        )
+      }))
+    }
+  }
+  
+  datatable(
+    df, rownames = FALSE,
+    options = list(dom = "Brt", buttons = list("csv", "excel", "pdf"), pageLength = nrow(df)),
+    extensions = "Buttons"
+  ) %>% 
+    formatStyle(columns = names(df), `font-size` = "12px") %>%
+    formatStyle(columns = intersect(names(df), c("parameter", "Model")), fontWeight = "bold")
+})
+
+```
+
+Column {.tabset .tabset-fade }
+-------------------------------
+
+### Distribution Plots
+
+```{r si-histograms}
+
+renderHighchart({
+  data <- get_serial_data()
+  res <- fit_results_si()
+  
+  if (is.null(data) || length(data) < 3 || is.null(res) || length(res) == 0) {
+    return(highchart() %>% hc_title(text="Insufficient Data (N < 3)"))
+  }
+  
+  # set model colors
+  col_map <- list(
+    normal = "#DAA520",    # gold
+    lognormal = "#00BFFF", # blue
+    weibull = "#FF8C00",   # orange
+    gamma = "#228B22"      # green
+  )
+  line_col_overlaid <- list(normal="#0000FF", lognormal="#000000", weibull="#FF0000", gamma="#008000")
+  
+  # style definitions
+  axis_style <- list(color = "#000000", fontSize = "16px", fontWeight = "bold")
+  label_style <- list(color = "#000000", fontSize = "14px", fontWeight = "bold")
+  menu_items <- list("viewFullscreen", "separator", "downloadPNG", "downloadPDF", "downloadSVG")
+  
+  # ensure the first bar isn't cut in half (start x-axis slightly before min integer)
+  min_x_val <- floor(min(data)) - 0.5
+  
+  # case 1: all models selected
+  if (input$model_si == "ALL") {
+    
+    # calculate global max y
+    max_y <- 0
+    all_plot_data <- list()
+    for(m in names(res)) {
+      pd <- get_plot_data_si(data, res[[m]])
+      local_max <- max(c(pd$hist$y, pd$curve$y), na.rm = TRUE)
+      if(local_max > max_y) max_y <- local_max
+      all_plot_data[[m]] <- pd
+    }
+    max_y <- max_y * 1.05
+    
+    # sub-case a: overlaid (combined) view
+    if (input$view_si == "Overlaid") {
+      
+      pd <- all_plot_data[[1]] # base hist
+      
+      hc <- highchart() %>%
+        hc_chart(type = "line", style = list(fontFamily = "Tw Cen MT"), backgroundColor = "#FFFFFF") %>%
+        hc_title(text = "Combined Model Comparison", style = list(fontSize="16px", fontWeight="bold")) %>%
+        hc_plotOptions(
+          series = list(pointPlacement = "on"), 
+          column = list(grouping = FALSE, pointPadding = 0, groupPadding = 0, borderWidth = 0.25)
+        ) %>%
+        hc_xAxis(
+          title = list(text = "Serial Interval (Days)", style = axis_style), 
+          allowDecimals = FALSE, 
+          lineColor = "#000000", lineWidth = 1, tickWidth = 1, tickColor = "#000000",
+          labels = list(style = label_style),
+          min = min_x_val, # Updated start point
+          minPadding = 0, startOnTick = TRUE
+        ) %>%
+        hc_yAxis(
+          title = list(text = "Density", style = axis_style), 
+          gridLineWidth = 0, 
+          lineWidth = 1, lineColor="#000000", tickWidth = 1, tickColor = "#000000",
+          labels = list(style = label_style),
+          min = 0, max = max_y, 
+          minPadding = 0, startOnTick = TRUE
+        ) %>%
+        hc_add_series(
+          data = list_parse(pd$hist), type = "column", name = "Observed Data",
+          color = "#D3D3D3", borderColor = "#FFFFFF", borderWidth = 0.25,
+          pointRange = 2, zIndex = 0
+        )
+      
+      for(m in names(res)) {
+        nm <- tolower(m)
+        pd_model <- all_plot_data[[m]]
+        hc <- hc %>% hc_add_series(
+          data = pd_model$curve, type = "line", name = paste(m, "Fit"),
+          color = line_col_overlaid[[nm]], lineWidth = 2, marker = list(enabled = FALSE), zIndex = 2
+        )
+      }
+      hc <- hc %>% hc_exporting(enabled = TRUE, buttons = list(contextButton = list(menuItems = menu_items)))
+      return(hc)
+      
+    } else {
+      # sub-case b: side-by-side (composite) view with constant scale
+      hc <- highchart() %>%
+        hc_chart(type = "column", style = list(fontFamily = "Tw Cen MT"), backgroundColor = "#FFFFFF") %>%
+        hc_title(text = "Distribution Comparison", style = list(fontSize="16px", fontWeight="bold")) %>%
+        hc_plotOptions(
+          series = list(pointPlacement = "on"),
+          column = list(grouping = FALSE, pointPadding = 0, groupPadding = 0, borderWidth = 0.25)
+        ) %>%
+        
+        # 4 x-axes
+        hc_xAxis_multiples(
+          list(title = list(text = "Normal", style=axis_style), left = "0%", width = "22%", lineWidth=1, lineColor="black", tickWidth=1, tickColor="black", labels=list(style=label_style), min=min_x_val, minPadding=0, startOnTick=TRUE),
+          list(title = list(text = "Weibull", style=axis_style), left = "26%", width = "22%", offset = 0, lineWidth=1, lineColor="black", tickWidth=1, tickColor="black", labels=list(style=label_style), min=min_x_val, minPadding=0, startOnTick=TRUE),
+          list(title = list(text = "Gamma", style=axis_style), left = "52%", width = "22%", offset = 0, lineWidth=1, lineColor="black", tickWidth=1, tickColor="black", labels=list(style=label_style), min=min_x_val, minPadding=0, startOnTick=TRUE),
+          list(title = list(text = "Lognormal", style=axis_style), left = "78%", width = "22%", offset = 0, lineWidth=1, lineColor="black", tickWidth=1, tickColor="black", labels=list(style=label_style), min=min_x_val, minPadding=0, startOnTick=TRUE)
+        ) %>%
+        
+        # 4 y-axes (aligned, same scale)
+        hc_yAxis_multiples(
+          list(title = list(text = "Density", style=axis_style), left = "0%", width = "22%", lineWidth=1, lineColor="black", tickWidth=1, tickColor="black", gridLineWidth=0, labels=list(style=label_style), min=0, max=max_y, minPadding=0, startOnTick=TRUE),
+          list(title = list(text = "Density", style=axis_style), left = "26%", width = "22%", offset = 0, lineWidth=1, lineColor="black", tickWidth=1, tickColor="black", gridLineWidth=0, labels=list(style=label_style), min=0, max=max_y, minPadding=0, startOnTick=TRUE),
+          list(title = list(text = "Density", style=axis_style), left = "52%", width = "22%", offset = 0, lineWidth=1, lineColor="black", tickWidth=1, tickColor="black", gridLineWidth=0, labels=list(style=label_style), min=0, max=max_y, minPadding=0, startOnTick=TRUE),
+          list(title = list(text = "Density", style=axis_style), left = "78%", width = "22%", offset = 0, lineWidth=1, lineColor="black", tickWidth=1, tickColor="black", gridLineWidth=0, labels=list(style=label_style), min=0, max=max_y, minPadding=0, startOnTick=TRUE)
+        ) %>%
+        
+        hc_exporting(enabled = TRUE, buttons = list(contextButton = list(menuItems = menu_items)), chartOptions = list(chart = list(backgroundColor = "#FFFFFF"))) %>%
+        hc_legend(enabled = FALSE)
+      
+      axes_idx <- list(normal=0, weibull=1, gamma=2, lognormal=3)
+      for(m in names(res)) {
+        nm <- tolower(m)
+        idx <- axes_idx[[nm]]
+        if(is.null(idx)) next 
+        
+        pd <- all_plot_data[[m]]
+        
+        hc <- hc %>%
+          hc_add_series(
+            data = list_parse(pd$hist), type = "column", color = col_map[[nm]],
+            xAxis = idx, yAxis = idx, 
+            borderColor = "#FFFFFF", borderWidth = 0.25,
+            pointRange = 2, 
+            name = paste(m, "Hist")
+          ) %>%
+          hc_add_series(
+            data = pd$curve, type = "line", color = "#000000",
+            xAxis = idx, yAxis = idx, 
+            lineWidth = 1.5, marker = list(enabled = FALSE),
+            name = paste(m, "Fit")
+          )
+      }
+      return(hc)
+    }
+    
+  } else {
+    # case 2: single model plot
+    m <- names(res)[[1]]
+    pd <- get_plot_data_si(data, res[[1]])
+    nm <- tolower(m)
+    
+    highchart() %>%
+      hc_chart(style = list(fontFamily = "Tw Cen MT"), backgroundColor = "#FFFFFF") %>%
+      hc_title(text = paste(str_to_title(m), "Distribution"), style = list(fontSize="16px", fontWeight="bold")) %>%      
+      hc_plotOptions(
+        series = list(pointPlacement = "on"), 
+        column = list(grouping = FALSE, pointPadding = 0, groupPadding = 0, borderWidth = 0.25)
+      ) %>%
+      hc_add_series(
+        data = list_parse(pd$hist), type = "column", name = "Histogram",
+        color = col_map[[nm]], borderColor = "#FFFFFF", borderWidth = 0.25,
+        pointRange = 2
+      ) %>%
+      hc_add_series(
+        data = pd$curve, type = "line", name = "Fit",
+        color = "#000000", lineWidth = 1.5, marker = list(enabled = FALSE)
+      ) %>%
+      hc_xAxis(
+        title = list(text = "Serial interval (days)", style = axis_style), 
+        min = min_x_val, tickInterval = 2,
+        lineColor = "#000000", lineWidth = 1, tickWidth = 1, tickColor = "#000000",
+        labels = list(style = label_style),
+        minPadding = 0, startOnTick = TRUE
+      ) %>%
+      hc_yAxis(
+        title = list(text = "Density", style = axis_style),
+        gridLineWidth = 0, lineWidth = 1, lineColor = "#000000", tickWidth = 1, tickColor = "#000000",
+        labels = list(style = label_style),
+        min = 0, minPadding = 0, startOnTick = TRUE
+      ) %>%
+      hc_exporting(enabled = TRUE, buttons = list(contextButton = list(menuItems = menu_items)), chartOptions = list(chart = list(backgroundColor = "#FFFFFF")))
+  }
+})
+
+```
+
+### Dataset Preview
+
+```{r}
+
+renderDataTable({
+  req(dataset_si())
+  dataset <- dataset_si()
+  
+  # ensure date columns are formatted as strings in yyyy-mm-dd
+  dataset$date_of_exposure <- as.Date(dataset$date_of_exposure)
+  dataset$date_of_onset <- as.Date(dataset$date_of_onset)
+  dataset$source_date <- as.Date(dataset$source_date)
+  
+  datatable(
+    dataset,
+    options = list(
+      pageLength = 10,
+      paging = TRUE,
+      striped = TRUE,
+      bordered = TRUE,
+      hover = TRUE
+    ),
+    rownames = FALSE
+  )
+})
+
+```
+
+Serial Interval (Bayesian) {data-orientation=rows}
+==========================================
+
+Sidebar {.sidebar}
+--------------------
+
+```{r si-bayes-sidebar}
+
+hr()
+fileInput("file_bayes_si", "Choose CSV File",
+          multiple = FALSE,
+          accept = c("text/csv", "text/comma-separated-values", ".csv"))
+
+hr()
+# stratification inputs
+selectInput(inputId = "sex_bayes_si", label = "Sex",
+            choices = c("All", "Male", "Female"),
+            selected = "All")
+
+selectInput(inputId = "age_bayes_si", label = "Age Group",
+            choices = c("All", '0 - 19', '20 - 29', '30 - 39', '40 - 49', '50 - 59', '≥ 60'),
+            selected = "All")
+
+hr()
+# model selection
+selectInput("bayes_model_select_si", "Distribution Model", 
+            choices = c("Normal","Weibull", "Gamma", "Lognormal"), 
+            selected = "Normal")
+
+sliderInput("iter_count_si", "Iterations (Max 4000)", value = 1000, min = 500, max = 4000, step = 100)
+
+hr()
+actionButton("run_bayes_si", "Run Bayesian Model", icon = icon("play"), class = "btn-primary", width = "100%")
+
+hr()
+valueBox(value = tags$h6("Note: This model estimates Serial Interval by linking Infectors to Infectees. Ensure 'Source of infection' IDs match 'id'.",
+                         style = "text-align: justify; font-family: Tw Cen MT; font-size: 16px; color: white;"), 
+         color = "#333333")
+
+hr()
+
+valueBox(
+  value = downloadButton("downloadMockSerialBayes", "Download Mock Data", icon = icon("download")),
+  color = "#FFFFFF"
+)
+
+renderImage({
+  pfad <- "one_logo.png"
+  list(
+    src = pfad,
+    contentType = 'image/png',
+    width = 210,
+    height = 60,
+    style = "position: fixed; bottom: 10px; left: 10px; cursor: pointer;",
+    onclick = "window.location.href = '[http://onehealth.or.kr/](http://onehealth.or.kr/)';"
+  )
+}, deleteFile = F)
+
+```
+
+
+```{r si-bayes-data-processing}
+
+# data loading/processing
+bayes_si_global <- reactive({
+  req(input$file_bayes_si)
+  tryCatch({
+    df <- read.csv(input$file_bayes_si$datapath, stringsAsFactors = FALSE)
+  }, error = function(e) {
+    validate(need(FALSE, "error reading file. please ensure it is a valid csv."))
+  })
+  names(df) <- tolower(names(df))
+  names(df) <- gsub("\\.", "_", names(df))
+  
+  # validation start
+  validate(
+    need(all(c("id", "source_of_infection", "date_of_onsetmin", "date_of_onsetmax") %in% names(df)),
+         "incorrect dataset: please upload serial bayesian data containing 'id', 'source of infection', 'date of onsetmin', and 'date of onsetmax'.")
+  )
+  # validation end
+  
+  # standardize sex
+  if("sex" %in% names(df)) {
+    df <- df %>% mutate(sex = case_when(
+      grepl("^m", sex, ignore.case = TRUE) ~ "Male",
+      grepl("^f", sex, ignore.case = TRUE) ~ "Female",
+      TRUE ~ sex
+    ))
+  }
+  
+  # standardize age group
+  col_age <- grep("age.*group", names(df), value = TRUE)[1]
+  if(!is.na(col_age)) {
+    df$age_clean <- df[[col_age]]
+    df <- df %>% mutate(age_group = case_when(
+      grepl("0-19|under 10|10s", age_clean, ignore.case=T) ~ '0 - 19',
+      grepl("20s|20-29", age_clean, ignore.case=T) ~ '20 - 29',
+      grepl("30s|30-39", age_clean, ignore.case=T) ~ '30 - 39',
+      grepl("40s|40-49", age_clean, ignore.case=T) ~ '40 - 49',
+      grepl("50s|50-59", age_clean, ignore.case=T) ~ '50 - 59',
+      grepl("60s|70s|80s|60", age_clean, ignore.case=T) ~ '≥ 60',
+      TRUE ~ 'Unknown'
+    ))
+  }
+  
+  df$id_clean <- trimws(gsub("#", "", df$id))
+  df$source_clean <- trimws(gsub("#", "", df$source_of_infection))
+  df$onset_min <- parse_date(df$date_of_onsetmin)
+  df$onset_max <- parse_date(df$date_of_onsetmax)
+  
+  df
+})
+
+# filtering logic 
+bayes_si_data <- reactive({
+  req(bayes_si_global())
+  
+  # clean memory
+  gc() 
+  
+  df <- bayes_si_global()
+  
+  df_infectors <- df 
+  df_infectees <- df
+  
+  if (input$sex_bayes_si != "All" && "sex" %in% names(df)) {
+    df_infectees <- df_infectees %>% filter(sex == input$sex_bayes_si)
+  }
+  if (input$age_bayes_si != "All" && "age_group" %in% names(df)) {
+    df_infectees <- df_infectees %>% filter(age_group == input$age_bayes_si)
+  }
+  
+  n_before_cleaning <- nrow(df_infectees)
+  
+  df_merged <- df_infectees %>%
+    inner_join(df_infectors %>% dplyr::select(id_clean, onset_min, onset_max), 
+               by = c("source_clean" = "id_clean"), 
+               suffix = c("_infectee", "_infector"))
+  
+  df_final <- df_merged %>%
+    filter(!is.na(onset_min_infectee), !is.na(onset_min_infector)) %>%
+    mutate(
+      tStartExposure = as.integer(onset_min_infector - as.Date("2019-12-31")),
+      tEndExposure = as.integer(onset_max_infector - as.Date("2019-12-31")),
+      tSymptomOnset = as.integer(onset_min_infectee - as.Date("2019-12-31")) + 
+        as.integer(onset_max_infectee - onset_min_infectee)/2
+    ) 
+  
+  if (input$bayes_model_select_si != "Normal") {
+    df_final <- df_final %>% filter(tSymptomOnset > tStartExposure)
+  }
+  
+  n_final <- nrow(df_final)
+  n_dropped <- n_before_cleaning - n_final
+  
+  if (n_dropped > 0) {
+    showNotification(
+      paste0("data loaded: ", n_final, " linked pairs found. (", n_dropped, " rows removed: unlinked or invalid dates)"),
+      type = "warning", 
+      duration = 5
+    )
+  } else {
+    showNotification(
+      paste0("data successfully loaded: ", n_final, " pairs ready."),
+      type = "message", 
+      duration = 3
+    )
+  }
+  
+  df_final
+})
+
+# modeling
+bayes_si_fit <- eventReactive(input$run_bayes_si, {
+  
+  shinyjs::disable("run_bayes_si")
+  
+  on.exit({
+    shinyjs::enable("run_bayes_si")
+  })
+  
+  # cleanup
+  gc()
+  gc()
+  
+  req(bayes_si_data())
+  df <- bayes_si_data()
+  
+  validate(
+    need(nrow(df) >= 5, "insufficient data: you need at least 5 linked pairs.")
+  )
+  
+  stan_data <- list(
+    N = nrow(df),
+    tStartExposure = df$tStartExposure,
+    tEndExposure = df$tEndExposure,
+    tSymptomOnset = df$tSymptomOnset
+  )
+  
+  withProgress(message = 'running bayesian model...', detail = 'initializing...', value = 0, {
+    
+    mod <- get_compiled_stan_model(input$bayes_model_select_si)
+    incProgress(0.1, detail = "sampling chains...")
+    
+    # run the sampling
+    fit <- rstan::sampling(
+      object = mod, 
+      data = stan_data,
+      chains = 1, 
+      cores = 1, 
+      iter = input$iter_count_si, 
+      warmup = input$iter_count_si / 2,
+      refresh = 0,
+      # optimization: only save specific parameters to save ram
+      pars = c("alphaInc", "sigmaInc"),
+      control = list(adapt_delta = 0.95)
+    )
+    
+    incProgress(0.8, detail = "extracting posteriors...")
+    params <- rstan::extract(fit)
+    
+    # final cleanup after heavy processing
+    gc()
+    
+    list(
+      fit_obj = fit,
+      iterations = input$iter_count_si,
+      model_name = input$bayes_model_select_si,
+      alpha = params$alphaInc,
+      sigma = params$sigmaInc,
+      alpha_summary = quantile(params$alphaInc, probs = c(0.025, 0.5, 0.975)),
+      sigma_summary = quantile(params$sigmaInc, probs = c(0.025, 0.5, 0.975))
+    )
+  })
+})
+
+```
+
+## Row {data-height="180"}
+
+### Sample Size
+
+```{r si-bayes-sample-size}
+
+renderUI({
+  req(bayes_si_data())
+  
+  ss <- nrow(bayes_si_data())
+  
+  htmltools::div(
+    style = "display: flex; flex-direction: column; justify-content: center; align-items: center; height: 100%; width: 100%; padding: 10px;",
+    htmltools::div(
+      style = "font-size: 40px; font-weight: bold; margin-bottom: 5px; text-align: center; font-family: Tw Cen MT; color: #000000;",
+      ss
+    ),
+    htmltools::div(
+      style = "font-size: 14px; text-align: center; color: #666;",
+      "Linked Pairs"
+    )
+  )
+})
+
+```
+
+### Model Statistics (Median & 95% CrI)
+
+```{r si-bayes-model-stats}
+
+renderDT({
+  req(bayes_si_fit())
+  res <- bayes_si_fit()
+  
+  # dynamic parameter labels
+  if (res$model_name == "Lognormal") {
+    p_names <- c("MeanLog (Alpha)", "SDLog (Sigma)")
+    post_means <- exp(res$alpha + (res$sigma^2)/2)
+  } else if (res$model_name == "Gamma") {
+    p_names <- c("Shape (Alpha)", "Rate (Sigma)")
+    post_means <- res$alpha / res$sigma
+  } else if (res$model_name == "Normal") {
+    p_names <- c("Mean (Alpha)", "SD (Sigma)")
+    post_means <- res$alpha # mean is just alpha for normal
+  } else {
+    p_names <- c("Shape (Alpha)", "Scale (Sigma)")
+    post_means <- res$sigma * gamma(1 + 1/res$alpha)
+  }
+  
+  df_stats <- data.frame(
+    Parameter = p_names,
+    `Median` = round(c(res$alpha_summary[2], res$sigma_summary[2]), 3),
+    `Lower_95_CrI` = round(c(res$alpha_summary[1], res$sigma_summary[1]), 3),
+    `Upper_95_CrI` = round(c(res$alpha_summary[3], res$sigma_summary[3]), 3)
+  )
+  
+  mean_summ <- quantile(post_means, probs = c(0.025, 0.5, 0.975))
+  
+  df_mean <- data.frame(
+    Parameter = "Mean Serial Interval",
+    `Median` = round(mean_summ[2], 3),
+    `Lower_95_CrI` = round(mean_summ[1], 3),
+    `Upper_95_CrI` = round(mean_summ[3], 3)
+  )
+  
+  final_df <- rbind(df_stats, df_mean)
+  
+  fname <- paste0("Serial_Interval_Bayesian_Stats_", Sys.Date())
+  
+  datatable(
+    final_df, 
+    rownames = FALSE, 
+    extensions = 'Buttons',
+    options = list(
+      dom = 'Brt',
+      buttons = list(
+        list(extend = "csv", filename = fname),
+        list(extend = "excel", filename = fname),
+        list(extend = "pdf", filename = fname)
+      ),
+      columnDefs = list(list(className = 'dt-center', targets = "_all"))
+    )
+  ) %>%
+    formatStyle(columns = "Parameter", fontWeight = "bold")
+})
+
+```
+
+Column {.tabset .tabset-fade }
+-------------------------------
+
+### Dataset Preview
+
+```{r si-bayes-dataset-preview}
+
+renderDataTable({
+  bayes_si_data()
+}, options = list(
+  pageLength = 10,
+  paging = TRUE,
+  striped = TRUE,
+  bordered = TRUE,
+  hover = TRUE
+), rownames = FALSE)
+
+```
+
+### Posterior Distribution (Median Fit)
+
+```{r si-bayes-posterior-dist}
+
+renderHighchart({
+  req(bayes_si_fit())
+  res <- bayes_si_fit()
+  
+  alpha_est <- median(res$alpha)
+  sigma_est <- median(res$sigma)
+  
+  # dynamic x-axis range logic
+  if (res$model_name == "Normal") {
+    # calculate lower bound to capture negative tail (99.9% coverage)
+    lower_bound <- qnorm(0.001, mean = alpha_est, sd = sigma_est)
+    # cap upper bound at 30 for comparability
+    upper_bound <- 30
+    x_vals <- seq(lower_bound, upper_bound, length.out = 300)
+    x_min_limit <- NULL # let chart auto-scale to show negatives
+  } else {
+    # for strictly positive models, fix range 0 to 30
+    x_vals <- seq(0, 30, length.out = 300)
+    x_min_limit <- 0
+  }
+  
+  # dynamic density calculation
+  if (res$model_name == "Gamma") {
+    y_vals <- dgamma(x_vals, shape = alpha_est, rate = sigma_est)
+  } else if (res$model_name == "Lognormal") {
+    y_vals <- dlnorm(x_vals, meanlog = alpha_est, sdlog = sigma_est)
+  } else if (res$model_name == "Normal") {
+    y_vals <- dnorm(x_vals, mean = alpha_est, sd = sigma_est)
+  } else {
+    y_vals <- dweibull(x_vals, shape = alpha_est, scale = sigma_est)
+  }
+  
+  model_label <- tools::toTitleCase(res$model_name)
+  menu_items <- list("viewFullscreen", "separator", "downloadPNG", "downloadPDF", "downloadSVG")
+  axis_style <- list(color = "#000000", fontSize = "14px", fontWeight = "bold", fontFamily = "Tw Cen MT")
+  
+  highchart() %>%
+    hc_chart(
+      style = list(fontFamily = "Tw Cen MT"), 
+      backgroundColor = "#FFFFFF"
+    ) %>%
+    
+    hc_title(
+      text = paste0("Posterior Predictive Distribution (", model_label, ")"),
+      style = list(fontSize = "18px", fontWeight = "bold", fontFamily = "Tw Cen MT", color = "#000000")
+    ) %>%
+    
+    hc_subtitle(
+      text = paste0("Based on ", res$iterations, " MCMC iterations"),
+      style = list(fontSize = "14px", fontFamily = "Tw Cen MT", color = "#666666")
+    ) %>%
+    
+    hc_exporting(
+      enabled = TRUE, 
+      filename = paste0("Serial_Interval_Posterior_Distribution_", Sys.Date()),
+      buttons = list(contextButton = list(menuItems = menu_items))
+    ) %>%
+    
+    hc_add_series(
+      data = data.frame(x = x_vals, y = y_vals), 
+      type = "area", 
+      name = "Posterior Density", 
+      color = "rgba(255, 140, 0, 0.5)",
+      lineWidth = 2
+    ) %>%
+    
+    hc_xAxis(
+      title = list(text = "Serial Interval (Days)", style = axis_style), 
+      labels = list(style = axis_style),
+      min = x_min_limit,
+      minPadding = 0,
+      startOnTick = TRUE,
+      lineColor = "#000000", 
+      lineWidth = 1, 
+      tickColor = "#000000"
+    ) %>%
+    
+    hc_yAxis(
+      title = list(text = "Density", style = axis_style), 
+      labels = list(style = axis_style),
+      min = 0, 
+      minPadding = 0, 
+      startOnTick = TRUE,
+      gridLineWidth = 0, 
+      lineColor = "#000000", 
+      lineWidth = 1, 
+      tickColor = "#000000"
+    ) %>%
+    
+    hc_tooltip(valueDecimals = 4, style = list(fontFamily = "Tw Cen MT"))
+})
+
+```
+
+### Trace Plot (Convergence Check)
+
+```{r si-bayes-trace-plot}
+
+renderPlotly({
+  req(bayes_si_fit())
+  
+  p <- rstan::traceplot(bayes_si_fit()$fit_obj, 
+                        pars = c("alphaInc", "sigmaInc"),
+                        linewidth = 0.25) +
+    theme_bw() +
+    ggtitle("Trace Plot: Alpha & Sigma") + 
+    theme(
+      text = element_text(family = "Tw Cen MT"),
+      plot.title = element_text(size = 14, face = "bold", hjust = 0.5),
+      axis.title = element_text(size = 12, face = "bold"),
+      axis.text = element_text(size = 10, color = "black"),
+      axis.line = element_line(color = "black"),
+      strip.background = element_rect(fill = "#f0f0f0"),
+      strip.text = element_text(face = "bold")
+    )
+  
+  ggplotly(p) %>%
+    config(
+      toImageButtonOptions = list(
+        format = "png",
+        filename = paste0("Serial_Interval_Trace_Plot_", Sys.Date()),
+        height = 500,
+        width = 700,
+        scale = 2
+      )
+    ) %>%
+    layout(font = list(family = "Tw Cen MT"))
+})
+
+```
+
+
+$k$ and $R_0$ {data-orientation=rows}
+=======================================
+
+Sidebar {.sidebar}
+-------------------
+
+```{r}
+
+hr()
+fileInput("file1_kr", "Choose CSV File",
+          multiple = TRUE,
+          accept = c("text/csv", "text/comma-separated-values,text/plain", ".csv"))
+hr()
+# cluster selection for transmission network visualization - initialize with placeholder
+selectInput(inputId = "cluster_kr", label = "Select cluster:",
+            choices = c("All"), selected = "All")
+hr()
+valueBox(
+  value = tags$h6("Note: Superspreading event is an event in which an infectious disease is spread much more than usual. Superspreader: An unusually contagious individual infected with a disease. The superspreading potential is estimated through the R₀ (Basic Reproduction number) and Kappa (variation in individual infectiousness).", 
+                  style = "text-align: justify; font-family: Gill Sans MT; font-size: 16px; color: white;"),
+  color = "#FFFFFF"
+)
+hr()
+valueBox(
+  value = downloadButton("downloadMockKappa", "Download Mock Data", icon = icon("download")),
+  color = "#FFFFFF"
+)
+
+# logo image
+renderImage({
+  list(
+    src = "one_logo.png",
+    contentType = 'image/png',
+    width = 210,
+    height = 60,
+    style = "position: fixed; bottom: 10px; left: 10px; cursor: pointer;",
+    onclick = "window.location.href = 'http://onehealth.or.kr/';"
+  )
+}, deleteFile = FALSE)
+
+```
+
+```{r k-and-r0-data-processing}
+
+# reactive data for k and r0 - filtered by selected cluster
+dataset_kr <- eventReactive(input$file1_kr, {
+  req(input$file1_kr)
+  dataset <- read.csv(input$file1_kr$datapath)
+  dataset <- data.frame(lapply(dataset, trimws))
+  dataset <- janitor::clean_names(dataset)
+  
+  # validation start
+  validate(
+    need(all(c("cluster_id", "transmission_relationship") %in% names(dataset)),
+         "incorrect dataset: please upload k and r0 data containing 'cluster id' and 'transmission relationship'.")
+  )
+  # validation end
+  
+  dataset
+})
+
+# reactive dataset filtered by selected cluster
+filtered_dataset_kr <- reactive({
+  req(dataset_kr(), input$cluster_kr)
+  dataset <- dataset_kr()
+  
+  # filter data based on selected cluster
+  if (input$cluster_kr != "All") {
+    dataset <- dataset %>% filter(cluster_id == input$cluster_kr)
+  }
+  
+  dataset
+})
+
+# update cluster choices when data loads
+observeEvent(dataset_kr(), {
+  req(dataset_kr())
+  clusters <- c("All", unique(dataset_kr()$cluster_id) %>% sort())
+  updateSelectInput(session, "cluster_kr", choices = clusters, selected = "All")
+})
+
+# helper function for offspring distribution - uses filtered data
+get_offspring_data <- function() {
+  req(filtered_dataset_kr())
+  dt <- filtered_dataset_kr()
+  if (nrow(dt) == 0) stop("no data available for selected cluster")
+  freqt <- table(dt$source_of_infection_id) %>% data.frame() %>% filter(Var1 != 'unknown')
+  zeros <- nrow(dt) - nrow(freqt)
+  offt <- table(freqt$Freq) %>% data.frame()
+  offtk <- c(rep(0, zeros), rep(as.numeric(levels(offt$Var1)), offt$Freq))
+  list(offtk = offtk, fit = fitdistr(offtk, "negative binomial"))
+}
+
+```
+
+## Row {data-height="180"}
+
+### Sample Size
+
+```{r}
+
+renderUI({
+  # ensure filtered dataset is available
+  req(filtered_dataset_kr())
+  
+  # data Preparation
+  ss <- nrow(filtered_dataset_kr())
+  
+  # render the sample size text
+  htmltools::div(
+    style = "display: flex; flex-direction: column; justify-content: center; align-items: center; height: 100%; width: 100%; padding: 10px;",
+    htmltools::div(
+      style = "font-size: 30px; font-weight: bold; margin-bottom: 10px; text-align: center;font-family: Tw Cen MT;",
+      ss
+    ),
+    htmltools::div(
+      style = "font-size: 14px; text-align: center; color: #666;",
+      paste("Cluster:", input$cluster_kr)
+    )
+  )
+})
+
+```
+
+### Model Parameters
+
+```{r}
+
+renderDT({
+  req(input$file1_kr)
+  
+  res <- tryCatch({
+    get_offspring_data()
+  }, error = function(e) {
+    NULL
+  })
+  
+  if (is.null(res) || is.null(res$fit)) {
+    df <- data.frame(
+      parameter = c("R₀", "Kappa"),
+      value = rep("No data available", 2),
+      check.names = FALSE  
+    )
+  } else {
+    fit_df <- as.data.frame(unlist(res$fit))
+    fit_df$parameter <- row.names(fit_df)
+    rownames(fit_df) <- NULL
+    colnames(fit_df) <- c("value", "parameter")
+    
+    fit_df <- dplyr::select(fit_df, parameter, value) %>%
+      mutate(
+        parameter = gsub("size", "Kappa", parameter),
+        parameter = gsub("mu", "R₀", parameter),
+        value = round(value, 3)
+      ) %>%
+      head(4)
+    
+    df <- fit_df
+  }
+  
+  datatable(
+    df,
+    rownames = FALSE,
+    options = list(
+      dom = "Brt",
+      buttons = list(
+        list(extend = "csv", filename = paste0("k_ro_model_params_", input$cluster_kr, "_", Sys.Date())),
+        list(extend = "excel", filename = paste0("k_ro_model_params_", input$cluster_kr, "_", Sys.Date())),
+        list(extend = "pdf", filename = paste0("k_ro_model_params_", input$cluster_kr, "_", Sys.Date()))
+      ),
+      pageLength = nrow(df)
+    ),
+    extensions = "Buttons",
+    class = "compact cell-border stripe"
+  ) %>%
+    formatStyle(
+      columns = names(df),
+      `font-size` = "14px"
+    )
+})
+
+```
+
+### Confidence Interval
+
+```{r}
+
+renderDT({
+  req(input$file1_kr)
+  res <- tryCatch({
+    get_offspring_data()
+  }, error = function(e) {
+    NULL
+  })
+  
+  if (is.null(res) || is.null(res$fit)) {
+    df <- data.frame(
+      parameter = c("R₀", "Kappa"),
+      `2.5 %` = rep("No data available", 2),
+      `97.5 %` = rep("No data available", 2),
+      check.names = FALSE  
+    )
+  } else {
+    conf_interval <- confint(res$fit, level = 0.95)
+    conf_df <- as.data.frame(conf_interval)
+    conf_df$parameter <- rownames(conf_df)
+    
+    conf_df <- dplyr::select(conf_df, parameter, `2.5 %`, `97.5 %`) %>%
+      mutate(
+        parameter = gsub("size", "Kappa", parameter),
+        parameter = gsub("mu", "R₀", parameter),
+        `2.5 %` = round(`2.5 %`, 3),
+        `97.5 %` = round(`97.5 %`, 3)
+      )
+    
+    df <- conf_df
+  }
+  
+  datatable(
+    df,
+    rownames = FALSE,
+    options = list(
+      dom = "Brt",
+      buttons = list(
+        list(extend = "csv", filename = paste0("k_ro_conf_int_", input$cluster_kr, "_", Sys.Date())),
+        list(extend = "excel", filename = paste0("k_ro_conf_int_", input$cluster_kr, "_", Sys.Date())),
+        list(extend = "pdf", filename = paste0("k_ro_conf_int_", input$cluster_kr, "_", Sys.Date()))
+      ),
+      pageLength = nrow(df)
+    ),
+    extensions = "Buttons",
+    class = "compact cell-border stripe"
+  ) %>%
+    formatStyle(
+      columns = names(df),
+      `font-size` = "14px"
+    )
+})
+
+```
+
+
+Column {.tabset .tabset-fade }
+-------------------------------
+
+### Histogram
+
+```{r}
+
+renderHighchart({
+  
+  req(input$file1_kr)
+  
+  res <- tryCatch({
+    get_offspring_data()
+  }, error = function(e) {
+    NULL
+  })
+  
+  if (is.null(res)) {
+    # create empty chart with message
+    highchart() %>%
+      hc_title(
+        text = paste("Only one record available or No data available for cluster:", input$cluster_kr), 
+        style = list(
+          fontSize = "20px", 
+          fontWeight = "bold", 
+          color = "#000000", 
+          fontFamily = "Tw Cen MT"
+        )
+      ) %>%
+      hc_chart(style = list(fontFamily = "Tw Cen MT"), backgroundColor = "#FFFFFF")
+  } else {
+    # calculate negative binomial distribution
+    xvalue <- 0:max(res$offtk)
+    yvalue <- dnbinom(xvalue, size = res$fit$estimate["size"], mu = res$fit$estimate["mu"])
+    
+    # create histogram data
+    hist_data <- hist(res$offtk, plot = FALSE, breaks = seq(-0.5, max(res$offtk) + 0.5, by = 1))
+    
+    # create data for columns
+    hist_df <- data.frame(
+      from = hist_data$breaks[-length(hist_data$breaks)],
+      to = hist_data$breaks[-1],
+      y = hist_data$density,
+      x = hist_data$mids  # For positioning reference
+    )
+    
+    # style definitions
+    axis_style <- list(color = "#000000", fontSize = "14px", fontWeight = "bold")
+    label_style <- list(color = "#000000", fontSize = "16px", fontWeight = "Normal")
+    
+    # create negative binomial curve data (nudged by -0.5)
+    fit_data <- data.frame(x = xvalue - 0.5, y = yvalue)
+    
+    highchart() %>%
+      # add histogram bars
+      hc_add_series(
+        data = list_parse(hist_df),
+        type = "column",
+        name = "Histogram",
+        color = "#F2F2F2",
+        backgroundColor = "#FFFFFF",
+        borderColor = "#000000",
+        borderWidth = 1,
+        groupPadding = -0.05,
+        pointPadding = 0.05,
+        pointRange = 1,
+        pointPlacement = 0
+      ) %>%
+      # add negative binomial curve
+      hc_add_series(
+        data = fit_data,
+        type = "line",
+        name = "Negative Binomial Fit",
+        color = "#000000",
+        lineWidth = 1,
+        marker = list(enabled = FALSE)
+      ) %>%
+      hc_xAxis(
+        title = list(text = "Offspring", style = axis_style),
+        allowDecimals = FALSE,
+        gridLineWidth = 0, 
+        lineColor = "#000000", lineWidth = 1, tickWidth = 1, tickColor = "#000000",
+        labels = list(style = label_style),
+        min = -0.5,
+        max = max(res$offtk) + 0.5,
+        tickInterval = 1
+      ) %>%
+      hc_yAxis(
+        title = list(text = "Density", style = axis_style),
+        gridLineWidth = 0, 
+        lineColor = "#000000", lineWidth = 1, tickWidth = 1, tickColor = "#000000",
+        labels = list(style = label_style),
+        allowDecimals = TRUE,
+        min = 0
+      ) %>%
+      hc_title(
+        text = paste("Cluster:", input$cluster_kr),
+        style = list(fontSize = "16px", fontFamily = "Tw Cen MT", fontWeight = "bold")
+      ) %>%
+      hc_tooltip(
+        shared = TRUE,
+        crosshairs = TRUE,
+        valueDecimals = 2,
+        headerFormat = "<b>Offspring: {point.x}</b><br/>",
+        pointFormat = "<span style='color:#000000'>Density</span>: <b>{point.y:.2f}</b><br/>"
+      ) %>%
+      hc_exporting(
+        enabled = TRUE,
+        filename = paste0("k_ro_", input$cluster_kr),
+        buttons = list(
+          contextButton = list(
+            menuItems = list('downloadPNG', 'downloadPDF', 'downloadSVG')
+          )
+        )
+      ) %>%
+      hc_plotOptions(
+        column = list(
+          grouping = FALSE,
+          pointRange = 1,
+          pointPlacement = 0
+        )
+      ) %>%
+      hc_legend(enabled = FALSE) %>%
+      hc_chart(style = list(fontFamily = "Tw Cen MT"))
+  }
+})
+
+```
+
+### Transmission relationship
+
+```{r transmission-relationship-output}
+visNetworkOutput("network_plot")
+
+```
+
+```{r parse-network-data}
+
+output$download_high_quality <- downloadHandler(
+  filename = function() { paste("network_cluster_", input$cluster_kr, ".png", sep = "") },
+  content = function(file) {
+    temp_html <- tempfile(fileext = ".html")
+    visSave(network_plot(), temp_html)
+    webshot2::webshot(temp_html, file, vwidth = 3600, vheight = 2800, zoom = 6, delay = 3)
+  }
+)
+
+# add a new download handler for PDF
+output$download_high_quality_pdf <- downloadHandler(
+  filename = function() { paste("network_cluster_", input$cluster_kr, ".pdf", sep = "") },
+  content = function(file) {
+    temp_html <- tempfile(fileext = ".html")
+    visSave(network_plot(), temp_html)
+    webshot2::webshot(temp_html, file, vwidth = 3600, vheight = 2800, delay = 3)
+  }
+)
+
+filtered_data <- reactive({
+  req(dataset_kr(), input$cluster_kr)
+  df <- dataset_kr()
+  
+  # For transmission relationship, don't filter when "All" is selected
+  # as we want to show specific cluster networks
+  if (input$cluster_kr != "All") {
+    df_filtered <- df %>% filter(cluster_id == input$cluster_kr)
+  } else {
+    # return empty data frame when "All" is selected
+    df_filtered <- df[0, ]  # empty data frame with same structure
+  }
+  df_filtered
+})
+
+network_data <- reactive({
+  req(filtered_data())
+  df_filtered <- filtered_data()
+  
+  # Check if data is empty (when "All" is selected)
+  if (nrow(df_filtered) == 0) {
+    return(list(nodes = data.frame(), edges = data.frame()))
+  }
+  
+  edges_level1_2 <- df_filtered %>%
+    dplyr::select(cluster_id, infecteegen1) %>%
+    unique() %>%
+    rename(from = cluster_id, to = infecteegen1)
+  
+  edges_level2_3 <- df_filtered %>%
+    dplyr::select(infecteegen1, infecteegen2) %>%
+    unique() %>%
+    rename(from = infecteegen1, to = infecteegen2)
+  
+  edges_level3_4 <- df_filtered %>%
+    dplyr::select(infecteegen2, infecteegen3) %>%
+    unique() %>%
+    rename(from = infecteegen2, to = infecteegen3)
+  
+  edges_level4_5 <- df_filtered %>%
+    dplyr::select(infecteegen3, infecteegen4) %>%
+    unique() %>%
+    rename(from = infecteegen3, to = infecteegen4)
+  
+  edge_list <- rbind(edges_level1_2, edges_level2_3, edges_level3_4, edges_level4_5) %>%
+    filter(!from == "" & !to == "" & !is.na(from) & !is.na(to))
+  
+  all_nodes <- unique(c(edge_list$from, edge_list$to))
+  
+  node_clusters <- df_filtered %>%
+    dplyr::select(id = cluster_id, cluster_id) %>%
+    bind_rows(df_filtered %>% dplyr::select(id = infecteegen1, cluster_id)) %>%
+    bind_rows(df_filtered %>% dplyr::select(id = infecteegen2, cluster_id)) %>%
+    bind_rows(df_filtered %>% dplyr::select(id = infecteegen3, cluster_id)) %>%
+    bind_rows(df_filtered %>% dplyr::select(id = infecteegen4, cluster_id)) %>%
+    filter(!is.na(id), id != "") %>%
+    distinct(id, .keep_all = TRUE)
+  
+  nodes <- data.frame(
+    id = all_nodes,
+    label = all_nodes,
+    title = paste("ID:", all_nodes, "<br>Cluster:", input$cluster_kr),
+    color = "#4169E1",
+    font = list(color = "white", face = "bold", size = 40),
+    shadow = TRUE,
+    size = 25
+  ) %>%
+    left_join(node_clusters, by = "id") %>%
+    mutate(group = ifelse(is.na(cluster_id), "Unknown", as.character(cluster_id)))
+  
+  list(nodes = nodes, edges = edge_list)
+})
+
+output$network_plot <- renderVisNetwork({
+  req(network_data())
+  data <- network_data()
+  nodes <- data$nodes
+  edge_list <- data$edges
+  
+  # Check if "All" is selected or no data available
+  if (input$cluster_kr == "All" || nrow(edge_list) == 0) {
+    nodes <- data.frame(
+      id = 1,
+      label = "Please select an individual cluster.",
+      title = "Transmission relationships are shown for individual clusters only.<br>Select a specific cluster from the dropdown or check the 'Transmission Networks' tab to see the full network.",
+      color = "#f0f0f0",
+      font = list(color = "black", size = 20, face = "normal")
+    )
+    return(
+      visNetwork(nodes, data.frame(from = numeric(0), to = numeric(0))) %>%
+        visOptions(manipulation = FALSE) %>%
+        visNodes(shape = "box", size = 80) %>%
+        visLayout(randomSeed = 123) %>%
+        visPhysics(stabilization = FALSE) %>%
+        visInteraction(dragNodes = FALSE, dragView = FALSE, zoomView = FALSE)
+    )
+  }
+  
+  visNetwork(nodes, edge_list) %>%
+    visEdges(
+      arrows = list(to = list(enabled = TRUE, scaleFactor = 1.2)),
+      color = list(color = "#6E6E6E", highlight = "#FF0000"),
+      smooth = list(enabled = TRUE, type = "dynamic")
+    ) %>%
+    visNodes(
+      shape = "circle",
+      size = 90,
+      borderWidth = 1,
+      borderWidthSelected = 4,
+      font = list(size = 24, color = "white", face = "bold")
+    ) %>%
+    visOptions(
+      highlightNearest = list(enabled = TRUE, degree = list(from = 5, to = 5), hover = TRUE, algorithm = "hierarchical"),
+      nodesIdSelection = list(enabled = TRUE, values = nodes$id, selected = input$cluster_kr, style = 'width: 200px; height: 26px;')
+    ) %>%
+    visExport(
+      type = "png",
+      name = paste("transmission_network_cluster", input$cluster_kr),
+      label = "Download as PNG",
+      background = "#fff",
+      style = "position: absolute; top: -400px; right: 10px; z-index: 10;",
+      loadDependencies = TRUE
+    ) %>%
+    visInteraction(
+      navigationButtons = TRUE,
+      keyboard = TRUE,
+      tooltipDelay = 0,
+      dragView = TRUE,
+      zoomView = TRUE
+    ) %>%
+    visLayout(
+      randomSeed = 123,
+      improvedLayout = TRUE
+    ) %>%
+    visPhysics(
+      stabilization = list(iterations = 100),
+      solver = "forceAtlas2Based",
+      forceAtlas2Based = list(
+        gravitationalConstant = -50,
+        centralGravity = 0.01,
+        springLength = 100,
+        springConstant = 0.08
+      )
+    ) %>%
+    visLegend(enabled = FALSE) %>%
+    visEvents(
+      selectNode = "function(nodes) { Shiny.setInputValue('selected_node', nodes); }"
+    )
+})
+
+observeEvent(input$selected_node, {
+  req(input$selected_node, dataset_kr())
+  selected_id <- input$selected_node$nodes[[1]]
+  df <- dataset_kr()
+  selected_cluster <- df %>%
+    filter(cluster_id == selected_id |
+             infecteegen1 == selected_id |
+             infecteegen2 == selected_id |
+             infecteegen3 == selected_id |
+             infecteegen4 == selected_id) %>%
+    pull(cluster_id) %>%
+    first()
+  if(!is.na(selected_cluster) && selected_cluster != input$cluster_kr) {
+    updateSelectInput(session, "cluster_kr", selected = selected_cluster)
+  }
+})
+
+```
+
+### Transmission Networks
+
+```{r transmission-networks-output}
+visNetworkOutput("full_network_plot")
+```
+
+
+```{r parse-transmission-chain}
+
+# function to parse transmission chains
+parse_transmission_chain <- function(relationship) {
+  # skip if relationship is empty or unknown
+  if (is.na(relationship) || relationship == "" || relationship == "unknown") {
+    return(data.frame(from = character(), to = character()))
+  }
+  # split the chain by the arrow symbol (noticed this â†’ in the csv)
+  chain <- strsplit(relationship, "→|â†’")[[1]]
+  chain <- trimws(chain)  # added this cos some rows have whitespace
+  
+  # extract immediate relationships (each consecutive pair)
+  if (length(chain) >= 2) {
+    edges <- data.frame(
+      from = chain[1:(length(chain) - 1)],
+      to = chain[2:length(chain)]
+    )
+    return(edges[edges$from != "" & edges$to != "" & edges$from != edges$to, ])
+  }
+  
+  return(data.frame(from = character(), to = character()))
+}
+
+output$download_full_network <- downloadHandler(
+  filename = function() { paste("full_transmission_network_", Sys.Date(), ".png", sep = "") },
+  content = function(file) {
+    temp_html <- tempfile(fileext = ".html")
+    visSave(full_network_plot(), temp_html)
+    webshot2::webshot(temp_html, file, vwidth = 3600, vheight = 2800, zoom = 6, delay = 3)
+  }
+)
+
+full_network_data <- reactive({
+  req(dataset_kr())
+  df <- dataset_kr()
+  
+  edges_list <- lapply(df$transmission_relationship, parse_transmission_chain)
+  edges <- do.call(rbind, edges_list)
+  
+  edges <- edges[complete.cases(edges), ]
+  edges <- unique(edges)
+  
+  # get all unique nodes and sort them numerically
+  all_nodes <- unique(c(edges$from, edges$to))
+  
+  # extract numeric values for sorting
+  node_numbers <- as.numeric(gsub("#", "", all_nodes))
+  sorted_nodes <- all_nodes[order(node_numbers)]
+  
+  # create nodes data frame
+  nodes <- data.frame(
+    id = sorted_nodes,
+    label = sorted_nodes,
+    title = paste("ID:", sorted_nodes),
+    color = "#4169E1",
+    font = list(color = "white", face = "bold", size = 50),
+    shadow = TRUE,
+    size = 30
+  )
+  
+  list(nodes = nodes, edges = edges, sorted_ids = sorted_nodes)
+})
+
+output$full_network_plot <- renderVisNetwork({
+  req(full_network_data())
+  data <- full_network_data()
+  nodes <- data$nodes
+  edges <- data$edges
+  sorted_ids <- data$sorted_ids
+  
+  if(nrow(edges) == 0) {
+    nodes <- data.frame(
+      id = 1,
+      label = "No transmission data",
+      title = "No transmission relationships found in the dataset",
+      color = "#f0f0f0",
+      font = list(color = "black", size = 24)
+    )
+    return(
+      visNetwork(nodes, data.frame(from = numeric(0), to = numeric(0))) %>%
+        visOptions(manipulation = FALSE) %>%
+        visNodes(shape = "box", size = 50) %>%
+        visLayout(randomSeed = 123)
+    )
+  }
+  
+  visNetwork(nodes, edges) %>%
+    visEdges(
+      arrows = list(to = list(enabled = TRUE, scaleFactor = 1.2)),
+      color = list(color = "#6E6E6E", highlight = "#FF0000"),
+      smooth = list(enabled = TRUE, type = "dynamic")
+    ) %>%
+    visNodes(
+      shape = "circle",
+      size = 30,
+      borderWidth = 1,
+      borderWidthSelected = 4,
+      font = list(size = 20, color = "white", face = "bold")
+    ) %>%
+    visOptions(
+      highlightNearest = list(enabled = TRUE, degree = 1, hover = TRUE),
+      nodesIdSelection = list(
+        enabled = TRUE, 
+        values = sorted_ids,
+        style = 'width: 200px; height: 26px;'
+      )
+    ) %>%
+    visExport(
+      type = "png",
+      name = paste("full_transmission_network_", Sys.Date()),
+      label = "Download as PNG",
+      background = "#fff",
+      style = "position: absolute; top: -400px; right: 10px;",
+      loadDependencies = TRUE
+    ) %>%
+    visInteraction(
+      navigationButtons = TRUE,
+      keyboard = TRUE,
+      tooltipDelay = 0,
+      dragView = TRUE,
+      zoomView = TRUE
+    ) %>%
+    visLayout(
+      randomSeed = 123,
+      improvedLayout = TRUE
+    ) %>%
+    visPhysics(
+      stabilization = list(iterations = 100),
+      solver = "forceAtlas2Based",
+      forceAtlas2Based = list(
+        gravitationalConstant = -50,
+        centralGravity = 0.01,
+        springLength = 100,
+        springConstant = 0.08
+      )
+    ) %>%
+    visLegend(enabled = FALSE)
+})
+
+```
+
+### Dataset Preview
+
+```{r kappa-r0-dataset-preview}
+renderDataTable({
+  filtered_dataset_kr()
+}, options = list(pageLength = 10), rownames = FALSE)
+
+```

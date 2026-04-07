@@ -1,0 +1,101 @@
+X,id,date_of_exposure,regions,date_of_onsetmin,date_of_onsetmax,Source.of.infection,type,country,Transmission.type,Age.group.,sex
+1,#4,NA,incheon,27/11/2021,29/11/2021,#1,National,Domestic,NA,30s,M
+2,#61,NA,incheon,03/12/2021,05/12/2021,#20,National,Domestic,NA,60s,M
+3,#63,NA,incheon,07/12/2021,09/12/2021,#41,National,Domestic,NA,under 10,F
+4,#65,NA,incheon,04/12/2021,04/12/2021,#67,National,Domestic,NA,50s,M
+5,#66,NA,incheon,05/12/2021,06/12/2021,#64,National,Domestic,NA,30s,M
+6,#67,NA,incheon,03/12/2021,03/12/2021,#64,National,Domestic,NA,under 10,F
+7,#68,NA,incheon,06/12/2021,06/12/2021,#64,National,Domestic,NA,under 10,M
+8,#71,NA,incheon,05/12/2021,05/12/2021,#67,National,Domestic,NA,under 10,F
+9,#72,NA,incheon,04/12/2021,04/12/2021,#67,National,Domestic,NA,under 10,F
+10,#73,NA,incheon,06/12/2021,06/12/2021,#72,National,Domestic,NA,30s,M
+11,#74,NA,incheon,08/12/2021,07/12/2021,#75,National,Domestic,NA,20s,M
+12,#75,NA,incheon,06/12/2021,06/12/2021,#65,National,Domestic,NA,20s,F
+13,#76,NA,incheon,08/12/2021,08/12/2021,#75,National,Domestic,NA,under 10,F
+14,#80,NA,incheon,06/12/2021,06/12/2021,#65,National,Domestic,NA,under 10,F
+15,#81,NA,incheon,08/12/2021,09/12/2021,#83,National,Domestic,NA,30s,M
+16,#82,NA,incheon,07/12/2021,07/12/2021,#83,National,Domestic,NA,under 10,M
+17,#84,NA,incheon,08/12/2021,08/12/2021,#71,National,Domestic,NA,30s,F
+18,#85,NA,incheon,09/12/2021,09/12/2021,#74,National,Domestic,NA,40s,M
+19,#86,NA,incheon,08/12/2021,08/12/2021,#74,National,Domestic,NA,20s,M
+20,#92,NA,incheon,11/12/2021,11/12/2021,#89,National,Domestic,NA,under 10,F
+21,#93,NA,incheon,10/12/2021,10/12/2021,#91,National,Domestic,NA,70s,F
+22,#94,NA,incheon,12/12/2021,12/12/2021,#69,National,Domestic,NA,under 10,M
+23,#95,NA,incheon,06/12/2021,06/12/2021,#72,National,Domestic,NA,under 10,F
+24,#132,NA,incheon,15/12/2021,15/12/2021,#70,National,Domestic,NA,30s,M
+25,#159,NA,incheon,13/12/2021,13/12/2021,#157,National,Domestic,NA,under 10,F
+26,#160,NA,incheon,15/12/2021,15/12/2021,#159,National,Domestic,NA,30s,F
+27,#161,NA,incheon,17/12/2021,17/12/2021,#157,National,Domestic,NA,under 10,F
+28,#162,NA,incheon,16/12/2021,16/12/2021,#157,National,Domestic,NA,under 10,M
+29,#163,NA,incheon,14/12/2021,14/12/2021,#157,National,Domestic,NA,under 10,F
+30,#165,NA,incheon,17/12/2021,17/12/2021,#157,National,Domestic,NA,under 10,M
+31,#166,NA,incheon,16/12/2021,16/12/2021,#157,National,Domestic,NA,under 10,F
+32,#167,NA,incheon,18/12/2021,18/12/2021,#157,National,Domestic,NA,under 10,M
+33,#168,NA,incheon,18/12/2021,18/12/2021,#157,National,Domestic,NA,under 10,M
+34,#170,NA,incheon,18/12/2021,18/12/2021,#157,National,Domestic,NA,under 10,F
+35,#171,NA,incheon,15/12/2021,15/12/2021,#157,National,Domestic,NA,under 10,M
+36,#172,NA,incheon,18/12/2021,18/12/2021,#157,National,Domestic,NA,under 10,F
+37,#173,NA,incheon,15/12/2021,15/12/2021,#157,National,Domestic,NA,under 10,M
+38,#174,NA,incheon,18/12/2021,18/12/2021,#157,National,Domestic,NA,under 10,M
+39,#176,NA,incheon,17/12/2021,17/12/2021,#157,National,Domestic,NA,under 10,F
+40,#177,NA,incheon,16/12/2021,16/12/2021,#157,National,Domestic,NA,under 10,F
+41,#179,NA,incheon,18/12/2021,18/12/2021,#169,National,Domestic,NA,30s,F
+42,#182,NA,incheon,18/12/2021,18/12/2021,#156,National,Domestic,NA,under 10,M
+43,#183,NA,incheon,17/12/2021,17/12/2021,#177,National,Domestic,NA,30s,F
+44,#184,NA,incheon,17/12/2021,17/12/2021,#172,National,Domestic,NA,30s,F
+45,#186,NA,incheon,18/12/2021,18/12/2021,#166,National,Domestic,NA,40s,M
+46,#187,NA,incheon,16/12/2021,16/12/2021,#174,National,Domestic,NA,30s,F
+47,#188,NA,incheon,18/12/2021,18/12/2021,#157,National,Domestic,NA,under 10,F
+48,#190,NA,incheon,17/12/2021,17/12/2021,#174,National,Domestic,NA,50s,M
+49,#191,NA,incheon,17/12/2021,17/12/2021,#163,National,Domestic,NA,60s,M
+50,#192,NA,incheon,19/12/2021,19/12/2021,#163,National,Domestic,NA,60s,F
+51,#193,NA,incheon,18/12/2021,18/12/2021,#174,National,Domestic,NA,30s,M
+52,#194,NA,incheon,12/12/2021,12/12/2021,#174,National,Domestic,NA,30s,M
+53,#195,NA,incheon,19/12/2021,19/12/2021,#174,National,Domestic,NA,under 10,F
+54,#199,NA,incheon,19/12/2021,19/12/2021,#190,National,Domestic,NA,50s,M
+55,#200,NA,incheon,20/12/2021,20/12/2021,#201,National,Domestic,NA,40s,M
+56,#237,NA,incheon,20/12/2021,20/12/2021,#166,National,Domestic,NA,60s,F
+57,#239,NA,incheon,18/12/2021,18/12/2021,#157,National,Domestic,NA,under 10,F
+58,#241,NA,incheon,20/12/2021,20/12/2021,#162,National,Domestic,NA,40s,M
+59,#242,NA,incheon,19/12/2021,19/12/2021,#162,National,Domestic,NA,10s,M
+60,#244,NA,incheon,19/12/2021,19/12/2021,#182,National,Domestic,NA,30s,F
+61,#245,NA,incheon,19/12/2021,19/12/2021,#182,National,Domestic,NA,under 10,F
+62,#246,NA,incheon,19/12/2021,19/12/2021,#182,National,Domestic,NA,under 10,M
+63,#250,NA,incheon,17/12/2021,17/12/2021,#156,National,Domestic,NA,under 10,F
+64,#252,NA,incheon,20/12/2021,20/12/2021,#182,National,Domestic,NA,60s,F
+65,#253,NA,incheon,19/12/2021,19/12/2021,#182,National,Domestic,NA,60s,F
+66,#254,NA,incheon,18/12/2021,18/12/2021,#161,National,Domestic,NA,30s,M
+67,#277,NA,incheon,19/12/2021,19/12/2021,#205,National,Domestic,NA,40s,M
+68,#279,NA,incheon,20/12/2021,20/12/2021,#205,National,Domestic,NA,under 10,F
+69,#281,NA,incheon,21/12/2021,21/12/2021,#228,National,Domestic,NA,10s,M
+70,#282,NA,incheon,21/12/2021,21/12/2021,#202,National,Domestic,NA,40s,F
+71,#283,NA,incheon,20/12/2021,20/12/2021,#181,National,Domestic,NA,40s,F
+72,#284,NA,incheon,19/12/2021,19/12/2021,#181,National,Domestic,NA,under 10,M
+73,#286,NA,incheon,18/12/2021,18/12/2021,#191,National,Domestic,NA,70s,M
+74,#296,NA,incheon,19/12/2021,19/12/2021,#202,National,Domestic,NA,20s,F
+75,#300,NA,incheon,19/12/2021,19/12/2021,#181,National,Domestic,NA,under 10,F
+76,#301,NA,incheon,20/12/2021,20/12/2021,#175,National,Domestic,NA,60s,F
+77,#317,NA,incheon,25/12/2021,25/12/2021,#181,National,Domestic,NA,20s,M
+78,#318,NA,incheon,21/12/2021,21/12/2021,#201,National,Domestic,NA,under 10,M
+79,#319,NA,incheon,21/12/2021,21/12/2021,#164,National,Domestic,NA,30s,M
+80,#320,NA,incheon,22/12/2021,22/12/2021,#191,National,Domestic,NA,50s,F
+81,#321,NA,incheon,22/12/2021,22/12/2021,#243,National,Domestic,NA,50s,M
+82,#323,NA,incheon,24/12/2021,24/12/2021,#181,National,Domestic,NA,under 10,F
+83,#324,NA,incheon,25/12/2021,25/12/2021,#181,National,Domestic,NA,40s,M
+84,#326,NA,incheon,25/12/2021,25/12/2021,#181,National,Domestic,NA,50s,F
+85,#327,NA,incheon,21/12/2021,21/12/2021,#202,National,Domestic,NA,under 10,M
+86,#328,NA,incheon,21/12/2021,21/12/2021,#202,National,Domestic,NA,under 10,M
+87,#329,NA,incheon,21/12/2021,21/12/2021,#202,National,Domestic,NA,under 10,F
+88,#330,NA,incheon,23/12/2021,23/12/2021,#170,National,Domestic,NA,60s,F
+89,#331,NA,incheon,19/12/2021,19/12/2021,#168,National,Domestic,NA,20s,F
+90,#332,NA,incheon,20/12/2021,20/12/2021,#170,National,Domestic,NA,30s,M
+91,#334,NA,incheon,24/12/2021,24/12/2021,#175,National,Domestic,NA,60s,F
+92,#335,NA,incheon,22/12/2021,22/12/2021,#177,National,Domestic,NA,60s,M
+93,#336,NA,incheon,23/12/2021,23/12/2021,#165,National,Domestic,NA,30s,F
+94,#337,NA,incheon,23/12/2021,23/12/2021,#171,National,Domestic,NA,40s,M
+95,#338,NA,incheon,24/12/2021,24/12/2021,#175,National,Domestic,NA,under 10,M
+96,#356,NA,incheon,26/12/2021,26/12/2021,#188,National,Domestic,NA,40s,F
+97,#370,NA,incheon,26/12/2021,26/12/2021,#236,National,Domestic,NA,40s,M
+98,#373,NA,incheon,28/12/2021,28/12/2021,#181,National,Domestic,NA,under 10,F
+99,#374,NA,incheon,28/12/2021,28/12/2021,#181,National,Domestic,NA,NA,M
+100,#396,NA,incheon,25/12/2021,25/12/2021,#280,National,Domestic,NA,under 10,F
