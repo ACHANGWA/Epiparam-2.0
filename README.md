@@ -1,4 +1,4 @@
-<img width="1911" height="981" alt="image (12)" src="https://github.com/user-attachments/assets/75dd3c0b-e339-446f-8cab-a40c8d445ff2" /># Epiparam
+
 EpiParam, a web-based Shiny application that provides an interactive platform for estimating and visualizing core epidemiological parameters using community-level outbreak data.
 
 # Installation
