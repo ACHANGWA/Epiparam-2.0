@@ -1,4 +1,4 @@
-# Epiparam
+<img width="1911" height="981" alt="image (12)" src="https://github.com/user-attachments/assets/75dd3c0b-e339-446f-8cab-a40c8d445ff2" /># Epiparam
 EpiParam, a web-based Shiny application that provides an interactive platform for estimating and visualizing core epidemiological parameters using community-level outbreak data.
 
 # Installation
@@ -18,5 +18,27 @@ Here are example screenshots of the application before analysis.
 
 
 The application has 5 modules (windows). 
+# 1. Incubation Period
+This window estimates the incubation period using MLE parametric models including the lognormal, weibull and gamma models.
+
+<img width="1915" height="978" alt="image (11)" src="https://github.com/user-attachments/assets/9600e1de-1b5d-4ff5-8750-75be7241437c" />
+
+# 2. Incubation Period (Bayesian)
+This window estimates the incubation period using parametric Bayesian models. 
+
+<img width="1911" height="981" alt="image (12)" src="https://github.com/user-attachments/assets/768cb01e-29bb-484f-b015-182a6ba2c9e4" />
+
+# 3. Serial interval 
+This window estimates the incubation period using MLE parametric models including the lognormal, weibull, gamma and normal models.
+
+<img width="1906" height="979" alt="image (13)" src="https://github.com/user-attachments/assets/75f479e9-018e-4914-8890-645d36515748" />
+
+# 4. Serial interval (Bayesian)
+This window estimates the serial interval using parametric Bayesian models. 
+<img width="1904" height="961" alt="image (14)" src="https://github.com/user-attachments/assets/4e30b30f-e548-418b-b3ec-906e6cb066c2" />
+
+# k and R0
+Estimates the R0 and K values using generation of transmission pairs.
+<img width="1908" height="993" alt="image (15)" src="https://github.com/user-attachments/assets/58333d18-ff2d-4b21-8c42-a3359537d783" />
 
 
